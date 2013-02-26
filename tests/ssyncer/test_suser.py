@@ -20,6 +20,10 @@ def mock_get_likes_success(uri):
 
 class TestSuser(unittest.TestCase):
 
+    def test_object_require_client(self):
+        """ Test object initialization raise exception if client missing. """
+        self.assertRaises(Exception, suser.__init__, "Foo")
+
     def test_object_has_good_name(self):
         """ Test object has name `foo`. """
         client = Mock()

@@ -18,6 +18,10 @@ class TestStrack(unittest.TestCase):
         if os.path.exists("/tmp/user1"):
             os.rmdir("/tmp/user1")
 
+    def test_object_require_client(self):
+        """ Test object initialization raise exception if client missing. """
+        self.assertRaises(Exception, strack.__init__, "Foo")
+
     def test_metadata(self):
         """
         Test metadata has been loaded from json object
@@ -42,6 +46,54 @@ class TestStrack(unittest.TestCase):
         self.assertEquals("Baz", object.get("title"))
         self.assertEquals("baz", object.get("permalink"))
         self.assertEquals("user3", object.get("username"))
+
+    def test_get_unknown_metadata(self):
+        """ Test attempt to get an unknown metadata return None. """
+        client = Mock()
+        object = strack(json_data[0], client=client)
+        self.assertEquals(None, object.get("unknown"))
+
+    def test_get_download_link(self):
+        """ Test get download link. """
+        client = Mock()
+        client.DOWNLOAD_URL = "mock_download_url_%s"
+        client.get_location.return_value = "http://lost.iya"
+
+        object = strack(json_data[0], client=client)
+        self.assertEquals("http://lost.iya", object.get_download_link())
+        client.get_location.assert_called_once_with("mock_download_url_1337")
+
+    def test_get_download_link_from_stream(self):
+        """ Test get download link from stream url. """
+        def side_effect(*args):
+            if args[0] == "mock_download_url_1337":
+                return None
+            elif args[0] == "mock_stream_url_1337":
+                return "http://lost2.iya"
+
+        client = Mock()
+        client.DOWNLOAD_URL = "mock_download_url_%s"
+        client.STREAM_URL = "mock_stream_url_%s"
+        client.get_location = Mock(side_effect=side_effect)
+
+        object = strack(json_data[0], client=client)
+        self.assertEquals("http://lost2.iya", object.get_download_link())
+        client.get_location.assert_called_with("mock_stream_url_1337")
+        self.assertEquals(2 , client.get_location.call_count)
+
+    def test_get_download_link_failed_with_two_method(self):
+        """ Test that get_download_link method return None when these two methods failed. """
+        def side_effect(*args):
+            return None
+
+        client = Mock()
+        client.DOWNLOAD_URL = "mock_download_url_%s"
+        client.STREAM_URL = "mock_stream_url_%s"
+        client.get_location = Mock(side_effect=side_effect)
+
+        object = strack(json_data[0], client=client)
+        self.assertEquals(None, object.get_download_link())
+        self.assertEquals(2 , client.get_location.call_count)
 
     def test_generate_local_filename(self):
         """ Test generated local filename look like this: {id}-{permalink}.mp3. """
