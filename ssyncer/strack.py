@@ -1,6 +1,5 @@
 from ssyncer.sclient import sclient
 import os.path
-import urllib.request
 
 class strack:
 
@@ -63,7 +62,7 @@ class strack:
             ))
             return False
 
-        r = urllib.request.urlopen(dlurl)
+        r = self.client.send_request(dlurl)
         f = open(local_file, "bw")
         f.write(r.read())
         f.close()
