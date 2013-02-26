@@ -8,6 +8,7 @@ class suser:
     client = None
 
     def __init__(self, username, **kwargs):
+        """ Initialize soundcloud's user object. """
         self.name = username
 
         if "client" in kwargs:
@@ -18,6 +19,7 @@ class suser:
             raise Exception("client or client_id missing..")
 
     def get_likes(self):
+        """ Get user's likes. """
         response = self.client.get(self.client.USER_LIKES % self.name)
         if not response:
             return False

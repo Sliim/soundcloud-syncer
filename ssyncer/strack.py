@@ -7,6 +7,7 @@ class strack:
     metadata = {}
 
     def __init__(self, track_data, **kwargs):
+        """ Track object initialization, load track metadata. """
         self.metadata = {
             "id": track_data["id"],
             "title": track_data["title"],
@@ -22,32 +23,38 @@ class strack:
             raise Exception("client or client_id missing..")
 
     def get(self, key):
+        """ Get track metadata value from a given key. """
         if key in self.metadata:
             return self.metadata[key]
         return None
 
     def get_download_link(self):
+        """ Get direct download link with soudcloud's redirect system. """
         url = self.client.get_location(self.client.DOWNLOAD_URL % self.get("id"))
         if not url:
             url = self.client.get_location(self.client.STREAM_URL % self.get("id"))
         return url
 
     def generate_local_filename(self):
+        """ Generate local filename for this track. """
         return "{0}-{1}.mp3".format(self.get("id"), self.get("permalink"))
 
     def generate_local_directory(self, local_dir):
+        """ Generate local directory where track will be saved. Create it if not exists. """
         directory = "{0}/{1}/".format(local_dir, self.get("username"))
         if not os.path.exists(directory):
             os.makedirs(directory)
         return directory
 
     def track_exists(self, local_dir):
+        """ Check if track exists in local directory. """
         path = self.generate_local_directory(local_dir) + self.generate_local_filename()
         if os.path.exists(path) and os.path.getsize(path) > 0:
             return True
         return False
 
     def download(self, local_dir):
+        """ Download a track in local directory. """
         local_file = self.generate_local_directory(local_dir) + self.generate_local_filename()
 
         if self.track_exists(local_dir):
