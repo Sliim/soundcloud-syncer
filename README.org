@@ -1,0 +1,37 @@
+#+TITLE: Soundcloud Syncer Readme
+#+AUTHOR: Sliim <sliim@mailoo.org>
+
+* Soundcloud Syncer
+Soundcloud-syncer is a tool to sync soundcloud  user's favorites tracks locally.
+** Requirements
+*** Python version
+- Python 3.2 (not tested yet with python 2.7).
+*** Run unittests
+To run unitests you will need following packages:
+- mock
+
+Optionnaly you can install these packages:
+- nose
+- coverage
+
+#+BEGIN_SRC shell
+pip-3.2 install mock nose coverage
+#+END_SRC
+** Usage
+- Clone repository:
+#+BEGIN_SRC shell
+git clone https://github.com/Sliim/soundcloud-syncer.git
+#+END_SRC
+
+- Move into directory cloned and run ~sync.py~ script:
+#+BEGIN_SRC shell
+mv soundcloud-syncer
+./sync.sh -u USER_TO_SYNC -c YOUR_CLIENT_ID -o OUTPUT_DIRECTORY
+#+END_SRC
+
+** Features
+- Get user's favorites tracks list.
+- Download tracks.
+- Check if track exists locally before download it.
+** License
+See COPYING file
