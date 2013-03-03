@@ -83,7 +83,7 @@ class strack:
 
         dlurl = self.get_download_link()
         if not dlurl:
-            print("ERROR: Can't download track_id:{0}|{1}".format(
+            print("\033[91mERROR: Can't download track_id:{0}|{1}\033[0m".format(
                 self.get("id"),
                 self.get("title")
             ))
