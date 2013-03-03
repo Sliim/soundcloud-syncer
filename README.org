@@ -1,8 +1,9 @@
-#+TITLE: Soundcloud Syncer Readme
-#+AUTHOR: Sliim <sliim@mailoo.org>
-
 * Soundcloud Syncer
+[[http://travis-ci.org/Sliim/soundcloud-syncer][http://secure.travis-ci.org/Sliim/soundcloud-syncer.png?branch=master]]
+
 Soundcloud-syncer is a tool to sync soundcloud  user's favorites tracks locally.
+
+
 ** Requirements
 *** Python version
 - Python 3.2 (not tested yet with python 2.7).
@@ -26,7 +27,12 @@ git clone https://github.com/Sliim/soundcloud-syncer.git
 - Move into directory cloned and run ~sync.py~ script:
 #+BEGIN_SRC shell
 mv soundcloud-syncer
-./sync.sh -u USER_TO_SYNC -c YOUR_CLIENT_ID -o OUTPUT_DIRECTORY
+./sync.py --help
+#+END_SRC
+
+- Basic usage:
+#+BEGIN_SRC shell
+./sync.py -u USER_TO_SYNC -c YOUR_CLIENT_ID -o OUTPUT_DIRECTORY
 #+END_SRC
 
 ** Features
@@ -34,4 +40,4 @@ mv soundcloud-syncer
 - Download tracks.
 - Check if track exists locally before download it.
 ** License
-See COPYING file
+   See COPYING file

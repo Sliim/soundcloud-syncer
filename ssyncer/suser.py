@@ -33,9 +33,9 @@ class suser:
         else:
             raise Exception("client or client_id missing..")
 
-    def get_likes(self):
+    def get_likes(self, offset=0, limit=50):
         """ Get user's likes. """
-        response = self.client.get(self.client.USER_LIKES % self.name)
+        response = self.client.get(self.client.USER_LIKES % (self.name, offset, limit))
         if not response:
             return False
 
