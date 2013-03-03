@@ -27,7 +27,8 @@ class strack:
             "id": track_data["id"],
             "title": track_data["title"],
             "permalink": track_data["permalink"],
-            "username": track_data["user"]["permalink"]
+            "username": track_data["user"]["permalink"],
+            "downloadable": track_data["downloadable"]
         }
 
         if "client" in kwargs:
@@ -45,9 +46,13 @@ class strack:
 
     def get_download_link(self):
         """ Get direct download link with soudcloud's redirect system. """
-        url = self.client.get_location(self.client.DOWNLOAD_URL % self.get("id"))
-        if not url:
+        url = None
+        if not self.get("downloadable"):
             url = self.client.get_location(self.client.STREAM_URL % self.get("id"))
+
+        if not url:
+            url = self.client.get_location(self.client.DOWNLOAD_URL % self.get("id"))
+
         return url
 
     def generate_local_filename(self):
