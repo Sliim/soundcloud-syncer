@@ -44,7 +44,7 @@ class sclient:
         try:
             return urllib.request.urlopen(url)
         except urllib.error.HTTPError as e:
-            print("ERROR: In request `%s` (%s)" % (url, e.__class__.__name__))
+            print("\033[91mERROR: In request `%s` (%s:%s)\033[0m" % (url, e.__class__.__name__, e.code))
             return False
 
     def get(self, uri):

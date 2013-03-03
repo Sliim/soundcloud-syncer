@@ -35,7 +35,7 @@ suser = suser(args.user, client=sclient)
 
 likes = suser.get_likes()
 if not likes:
-    print("ERROR: Can't get user's likes!'")
+    print("ERROR: Can't get user's likes!")
     exit(2)
 
 for strack in likes:
