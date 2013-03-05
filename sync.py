@@ -23,10 +23,10 @@ from ssyncer.serror import serror
 
 parser = argparse.ArgumentParser(description="Soundcloud Syncer")
 parser.add_argument("-u", "--user", help="Soundcloud user to sync", type=str, required=True)
-parser.add_argument("-c", "--client-id", help="Your client id", type=str, required=True)
+parser.add_argument("-c", "--client-id", help="Your client id", type=str, required=False)
 parser.add_argument("-o", "--output-dir", help="Output directory", type=str, required=True)
 parser.add_argument("-O", "--offset", help="Tracks offset", type=int, required=False)
-parser.add_argument("-L", "--limit", help="Tracks limit", type=int, required=False)
+parser.add_argument("-L", "--limit", help="Tracks limit (max: 200)", type=int, required=False)
 args = parser.parse_args()
 
 if not os.path.exists(args.output_dir):

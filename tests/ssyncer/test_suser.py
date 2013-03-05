@@ -22,7 +22,6 @@ from mock import MagicMock
 sys.path.insert(0, "../../")
 from ssyncer.suser import suser
 from ssyncer.strack import strack
-from ssyncer.serror import serror
 
 def mock_get_likes_success(uri):
     def json_res():
@@ -33,10 +32,6 @@ def mock_get_likes_success(uri):
     return response
 
 class TestSuser(unittest.TestCase):
-
-    def test_object_require_client(self):
-        """ Test object initialization raise exception if client missing. """
-        self.assertRaises(serror, suser, "Foo")
 
     def test_object_has_good_name(self):
         """ Test object has name `foo`. """

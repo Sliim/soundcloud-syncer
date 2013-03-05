@@ -15,7 +15,6 @@
 
 from ssyncer.sclient import sclient
 from ssyncer.strack import strack
-from ssyncer.serror import serror
 import json
 
 class suser:
@@ -32,7 +31,7 @@ class suser:
         elif "client_id" in kwargs:
             self.client = sclient(kwargs.get("client_id"))
         else:
-            raise serror("client or client_id missing..")
+            self.client = sclient()
 
     def get_likes(self, offset=0, limit=50):
         """ Get user's likes. """

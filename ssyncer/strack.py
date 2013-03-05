@@ -30,7 +30,7 @@ class strack:
         elif "client_id" in kwargs:
             self.client = sclient(kwargs.get("client_id"))
         else:
-            raise serror("client or client_id missing..")
+            self.client = sclient()
 
         self.metadata = {
             "id": track_data["id"],
