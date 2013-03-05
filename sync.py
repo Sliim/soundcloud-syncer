@@ -23,10 +23,29 @@ from ssyncer.serror import serror
 
 parser = argparse.ArgumentParser(description="Soundcloud Syncer")
 parser.add_argument("-u", "--user", help="Soundcloud user to sync", type=str, required=True)
-parser.add_argument("-c", "--client-id", help="Your client id", type=str, required=False)
+parser.add_argument("-c", "--client-id", help="Your client id", type=str)
 parser.add_argument("-o", "--output-dir", help="Output directory", type=str, required=True)
-parser.add_argument("-O", "--offset", help="Tracks offset", type=int, required=False)
-parser.add_argument("-L", "--limit", help="Tracks limit (max: 200)", type=int, required=False)
+parser.add_argument("-O", "--offset", help="Tracks offset", type=int)
+parser.add_argument("-L", "--limit", help="Tracks limit (max: 200)", type=int)
+parser.add_argument("-r", "--recursive", help="Recursive download", action="store_true")
+
+def likes_downloader(user, offset, limit):
+    """ Download user's likes. Return number of tracks downloaded. """
+    try:
+        likes = suser.get_likes(offset, limit)
+    except serror as e:
+        print(e)
+        return False
+
+    for strack in likes:
+        print("Start downloading %s (%s).." % (strack.get("title"), strack.get("id")))
+        try:
+            strack.download(args.output_dir)
+        except serror as e:
+            print(e)
+
+    return len(likes)
+
 args = parser.parse_args()
 
 if not os.path.exists(args.output_dir):
@@ -38,19 +57,24 @@ limit = 50
 if args.offset:
     offset = args.offset
 if args.limit:
+    if args.limit > 200:
+        print("Error: tracks limit limited to 200 tracks..")
+        exit(2)
     limit = args.limit
 
 try:
     sclient = sclient(args.client_id)
     suser = suser(args.user, client=sclient)
-    likes = suser.get_likes(offset, limit)
 except serror as e:
     print(e)
-    exit(2)
+    exit(3)
 
-for strack in likes:
-    print("Start downloading %s (%s).." % (strack.get("title"), strack.get("id")))
-    try:
-        strack.download(args.output_dir)
-    except serror as e:
-        print(e)
+if args.recursive:
+    while True:
+        nb = likes_downloader(suser, offset, limit)
+        if nb == 0:
+            break
+
+        offset = offset + limit
+else:
+    likes_downloader(suser, offset, limit)
