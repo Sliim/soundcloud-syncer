@@ -13,10 +13,12 @@
 # You should have received a copy of the GNU General Public License along
 # with Soundcloud-syncer. If not, see <http://www.gnu.org/licenses/gpl-3.0.html>.
 
+import sys
+import os.path
+import urllib.request
+
 from ssyncer.sclient import sclient
 from ssyncer.serror import serror
-
-import os.path
 
 class strack:
 
@@ -92,9 +94,24 @@ class strack:
         dlurl = self.get_download_link()
 
         if not dlurl:
-            raise serror("Can't download track_id:%s|%s" % (self.get("id"), self.get("title")))
+            raise serror("Can't download track_id:%d|%s" % (self.get("id"), self.get("title")))
 
-        r = self.client.send_request(dlurl)
-        f = open(local_file, "bw")
-        f.write(r.read())
-        f.close()
+        try:
+            urllib.request.urlretrieve(dlurl, local_file, self._progress_hook)
+        except:
+            os.remove(local_file)
+            raise
+
+    def _progress_hook(self, blocknum, blocksize, totalsize):
+        """ Progress hook for urlretrieve. """
+        read = blocknum * blocksize
+        if totalsize > 0:
+            percent = read * 1e2 / totalsize
+            s = "\r%5.1f%% %*d / %d" % (
+                percent, len(str(totalsize)), read, totalsize)
+            sys.stderr.write(s)
+
+            if read >= totalsize:
+                sys.stderr.write("\n")
+        else:
+            sys.stderr.write("read %d\n" % read)
