@@ -19,6 +19,7 @@ import os.path
 
 from ssyncer.sclient import sclient
 from ssyncer.suser import suser
+from ssyncer.serror import serror
 
 parser = argparse.ArgumentParser(description="Soundcloud Syncer")
 parser.add_argument("-u", "--user", help="Soundcloud user to sync", type=str, required=True)
@@ -32,9 +33,6 @@ if not os.path.exists(args.output_dir):
     print("Error: output directory `%s` doesn's exists." % args.output_dir)
     exit(1)
 
-sclient = sclient(args.client_id)
-suser = suser(args.user, client=sclient)
-
 offset = 0
 limit = 50
 if args.offset:
@@ -42,11 +40,17 @@ if args.offset:
 if args.limit:
     limit = args.limit
 
-likes = suser.get_likes(offset, limit)
-if not likes:
-    print("ERROR: Can't get user's likes!")
+try:
+    sclient = sclient(args.client_id)
+    suser = suser(args.user, client=sclient)
+    likes = suser.get_likes(offset, limit)
+except serror as e:
+    print(e)
     exit(2)
 
 for strack in likes:
-    print("Start downloading %s.." % strack.get("title"))
-    strack.download(args.output_dir)
+    print("Start downloading %s (%s).." % (strack.get("title"), strack.get("id")))
+    try:
+        strack.download(args.output_dir)
+    except serror as e:
+        print(e)

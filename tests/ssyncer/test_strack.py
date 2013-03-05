@@ -21,6 +21,7 @@ from mock import Mock
 
 sys.path.insert(0, "../../")
 from ssyncer.strack import strack
+from ssyncer.serror import serror
 
 json_data = json.loads('[{"kind":"track","id":1337,"title":"Foo","permalink":"foo","downloadable":true,"user":{"permalink":"user1"}},{"kind":"track","id":1338,"title":"Bar","permalink":"bar","downloadable":false,"user":{"permalink":"user2"}},{"kind":"track","id":1339,"title":"Baz","permalink":"baz","downloadable":true,"user":{"permalink":"user3"}}]')
 
@@ -35,7 +36,7 @@ class TestStrack(unittest.TestCase):
 
     def test_object_require_client(self):
         """ Test object initialization raise exception if client missing. """
-        self.assertRaises(Exception, strack.__init__, "Foo")
+        self.assertRaises(serror, strack, "Foo")
 
     def test_metadata(self):
         """

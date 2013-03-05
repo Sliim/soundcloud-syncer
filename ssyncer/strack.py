@@ -14,6 +14,8 @@
 # with Soundcloud-syncer. If not, see <http://www.gnu.org/licenses/gpl-3.0.html>.
 
 from ssyncer.sclient import sclient
+from ssyncer.serror import serror
+
 import os.path
 
 class strack:
@@ -23,6 +25,13 @@ class strack:
 
     def __init__(self, track_data, **kwargs):
         """ Track object initialization, load track metadata. """
+        if "client" in kwargs:
+            self.client = kwargs.get("client")
+        elif "client_id" in kwargs:
+            self.client = sclient(kwargs.get("client_id"))
+        else:
+            raise serror("client or client_id missing..")
+
         self.metadata = {
             "id": track_data["id"],
             "title": track_data["title"],
@@ -30,13 +39,6 @@ class strack:
             "username": track_data["user"]["permalink"],
             "downloadable": track_data["downloadable"]
         }
-
-        if "client" in kwargs:
-            self.client = kwargs.get("client")
-        elif "client_id" in kwargs:
-            self.client = sclient(kwargs.get("client_id"))
-        else:
-            raise Exception("client or client_id missing..")
 
     def get(self, key):
         """ Get track metadata value from a given key. """
@@ -48,10 +50,16 @@ class strack:
         """ Get direct download link with soudcloud's redirect system. """
         url = None
         if not self.get("downloadable"):
-            url = self.client.get_location(self.client.STREAM_URL % self.get("id"))
+            try:
+                url = self.client.get_location(self.client.STREAM_URL % self.get("id"))
+            except serror as e:
+                print(e)
 
         if not url:
-            url = self.client.get_location(self.client.DOWNLOAD_URL % self.get("id"))
+            try:
+                url = self.client.get_location(self.client.DOWNLOAD_URL % self.get("id"))
+            except serror as e:
+                print(e)
 
         return url
 
@@ -82,12 +90,9 @@ class strack:
             return False
 
         dlurl = self.get_download_link()
+
         if not dlurl:
-            print("\033[91mERROR: Can't download track_id:{0}|{1}\033[0m".format(
-                self.get("id"),
-                self.get("title")
-            ))
-            return False
+            raise serror("Can't download track_id:%s|%s" % (self.get("id"), self.get("title")))
 
         r = self.client.send_request(dlurl)
         f = open(local_file, "bw")

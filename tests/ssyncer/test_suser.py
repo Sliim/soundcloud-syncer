@@ -15,12 +15,14 @@
 
 import sys
 import unittest
+
 from mock import Mock
 from mock import MagicMock
 
 sys.path.insert(0, "../../")
 from ssyncer.suser import suser
 from ssyncer.strack import strack
+from ssyncer.serror import serror
 
 def mock_get_likes_success(uri):
     def json_res():
@@ -34,7 +36,7 @@ class TestSuser(unittest.TestCase):
 
     def test_object_require_client(self):
         """ Test object initialization raise exception if client missing. """
-        self.assertRaises(Exception, suser.__init__, "Foo")
+        self.assertRaises(serror, suser, "Foo")
 
     def test_object_has_good_name(self):
         """ Test object has name `foo`. """
@@ -42,18 +44,10 @@ class TestSuser(unittest.TestCase):
         object = suser("Foo", client=client)
         self.assertEqual("Foo", object.name)
 
-    def test_get_likes_on_failure(self):
-        """ Test get user's likes when an error occured. """
-        client = MagicMock()
-        client.get.return_value = False
-        object = suser("Foo", client=client)
-
-        self.assertFalse(object.get_likes())
-
     def test_get_likes_on_success(self):
         """ Test get user's likes when success. """
         client = MagicMock()
-        client.get = mock_get_likes_success
+        client.get = Mock(side_effect=mock_get_likes_success)
         object = suser("Foo", client=client)
 
         likes = object.get_likes()
@@ -65,7 +59,7 @@ class TestSuser(unittest.TestCase):
         """ Test get user's likes with default offset and limit. """
         client = MagicMock()
         client.USER_LIKES = "/users/%s/favorites.json?offset=%s&limit=%s&client_id="
-        client.get.return_value = False
+        client.get = Mock(side_effect=mock_get_likes_success)
         object = suser("Foo", client=client)
 
         object.get_likes()
@@ -77,7 +71,7 @@ class TestSuser(unittest.TestCase):
         """ Test get user's likes with custom offset and limit. """
         client = MagicMock()
         client.USER_LIKES = "/users/%s/favorites.json?offset=%s&limit=%s&client_id="
-        client.get.return_value = False
+        client.get = Mock(side_effect=mock_get_likes_success)
         object = suser("Foo", client=client)
 
         object.get_likes(10, 20)

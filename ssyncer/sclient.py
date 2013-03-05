@@ -14,6 +14,7 @@
 # with Soundcloud-syncer. If not, see <http://www.gnu.org/licenses/gpl-3.0.html>.
 
 import urllib.request
+from ssyncer.serror import serror
 
 class sclient:
     host = "api.soundcloud.com"
@@ -44,8 +45,7 @@ class sclient:
         try:
             return urllib.request.urlopen(url)
         except urllib.error.HTTPError as e:
-            print("\033[91mERROR: In request `%s` (%s:%s)\033[0m" % (url, e.__class__.__name__, e.code))
-            return False
+            raise serror("Request `%s` failed (%s:%s)." % (url, e.__class__.__name__, e.code))
 
     def get(self, uri):
         """ Send a request to given uri. """
@@ -61,7 +61,4 @@ class sclient:
 
     def get_location(self, uri):
         """ Send a request and get redirected url. """
-        res = self.get(uri)
-        if not res:
-            return False
-        return res.geturl()
+        return self.get(uri).geturl()
