@@ -26,14 +26,23 @@ json_data = json.loads('[{"kind":"track","id":1337,"title":"Foo","permalink":"fo
 
 class TestStrack(unittest.TestCase):
 
+    tmpdir = "/tmp/stests"
+
     def setUp(self):
-        """ This testsuite create temporary dir/files. Delete them before tests. """
-        if os.path.exists("/tmp/user1/1337-foo.mp3"):
-            os.remove("/tmp/user1/1337-foo.mp3")
-        if os.path.exists("/tmp/user1"):
-            os.rmdir("/tmp/user1")
-        if os.path.exists("/tmp/.ignore"):
-            os.remove("/tmp/.ignore")
+        """ Create temporary directory for tests. """
+        if not os.path.exists(self.tmpdir):
+            os.mkdir(self.tmpdir)
+
+    def tearDown(self):
+        """ This testsuite create temporary dir/files. Delete them after each tests. """
+        if os.path.exists("%s/user1/1337-foo.mp3" % self.tmpdir):
+            os.remove("%s/user1/1337-foo.mp3" % self.tmpdir)
+        if os.path.exists("%s/user1" % self.tmpdir):
+            os.rmdir("%s/user1" % self.tmpdir)
+        if os.path.exists("%s/.ignore" % self.tmpdir):
+            os.remove("%s/.ignore" % self.tmpdir)
+        if os.path.exists(self.tmpdir):
+            os.rmdir(self.tmpdir)
 
     def test_metadata(self):
         """
@@ -120,50 +129,45 @@ class TestStrack(unittest.TestCase):
         client = Mock()
         object = strack(json_data[0], client=client)
 
-        dir = object.generate_local_directory("/tmp")
-        self.assertEquals("/tmp/user1/", dir)
+        dir = object.generate_local_directory(self.tmpdir)
+        self.assertEquals("%s/user1/" % self.tmpdir, dir)
         if not os.path.exists(dir):
             self.fail("Generate local directory must create directory if not exists.")
         os.rmdir(dir)
 
     def test_track_not_exists(self):
         """ Test track doesn't exists. """
-        os.mkdir("/tmp/user1")
         client = Mock()
         object = strack(json_data[0], client=client)
-        self.assertFalse(object.track_exists("/tmp"))
-        os.rmdir("/tmp/user1")
+        self.assertFalse(object.track_exists(self.tmpdir))
 
     def test_track_exists(self):
         """ Test track exists. """
-        os.mkdir("/tmp/user1")
-        f = open("/tmp/user1/1337-foo.mp3", "w")
+        os.mkdir("%s/user1" % self.tmpdir)
+        f = open("%s/user1/1337-foo.mp3" % self.tmpdir, "w")
         f.write("0"*5)
         f.close()
 
         client = Mock()
         object = strack(json_data[0], client=client)
-        self.assertTrue(object.track_exists("/tmp"))
-
-        os.remove("/tmp/user1/1337-foo.mp3")
-        os.rmdir("/tmp/user1")
+        self.assertTrue(object.track_exists(self.tmpdir))
 
     def test_get_track_ignored(self):
         """ Test get track ignored list. """
-        f = open("/tmp/.ignore", "w")
+        f = open("%s/.ignore" % self.tmpdir, "w")
         f.write("foo\nbar\nbaz")
         f.close()
 
         client = Mock()
         object = strack(json_data[0], client=client)
-        ignored = object.get_ignored_tracks("/tmp")
-        self.assertIn("/tmp/foo", ignored)
-        self.assertIn("/tmp/bar", ignored)
-        self.assertIn("/tmp/baz", ignored)
+        ignored = object.get_ignored_tracks(self.tmpdir)
+        self.assertIn("%s/foo" % self.tmpdir, ignored)
+        self.assertIn("%s/bar" % self.tmpdir, ignored)
+        self.assertIn("%s/baz" % self.tmpdir, ignored)
 
     def test_get_track_ignored_not_ignore_file(self):
         """ Test get track ignored list when ignore file doesn't exists. """
         client = Mock()
         object = strack(json_data[0], client=client)
-        ignored = object.get_ignored_tracks("/tmp")
+        ignored = object.get_ignored_tracks(self.tmpdir)
         self.assertEquals(0, len(ignored))
