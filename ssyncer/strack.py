@@ -129,7 +129,7 @@ class strack:
                 self.get("title")))
 
         try:
-            print("Start downloading %s (%s).." % (
+            print("Start downloading %s (%d).." % (
                 self.get("title"),
                 self.get("id")))
             urllib.request.urlretrieve(dlurl, local_file, self._progress_hook)

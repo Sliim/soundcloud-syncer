@@ -88,8 +88,8 @@ class TestStrack(unittest.TestCase):
     def test_get_download_link(self):
         """ Test get download link. """
         client = Mock()
-        client.DOWNLOAD_URL = "mock_download_url_%s"
-        client.STREAM_URL = "mock_stream_url_%s"
+        client.DOWNLOAD_URL = "mock_download_url_%d"
+        client.STREAM_URL = "mock_stream_url_%d"
         client.get_location.return_value = "http://lost.iya"
 
         object = strack(json_data[0], client=client)
@@ -100,8 +100,8 @@ class TestStrack(unittest.TestCase):
     def test_get_download_link_not_downloadable(self):
         """ Test get download link from stream url. """
         client = Mock()
-        client.DOWNLOAD_URL = "mock_download_url_%s"
-        client.STREAM_URL = "mock_stream_url_%s"
+        client.DOWNLOAD_URL = "mock_download_url_%d"
+        client.STREAM_URL = "mock_stream_url_%d"
         client.get_location.return_value = "http://lost.iya"
 
         object = strack(json_data[1], client=client)
@@ -115,8 +115,8 @@ class TestStrack(unittest.TestCase):
         when track isn't downloadble and streamable.
         """
         client = Mock()
-        client.DOWNLOAD_URL = "mock_download_url_%s"
-        client.STREAM_URL = "mock_stream_url_%s"
+        client.DOWNLOAD_URL = "mock_download_url_%d"
+        client.STREAM_URL = "mock_stream_url_%d"
         client.get_location = Mock()
         client.get_location.return_value = None
 
@@ -125,16 +125,16 @@ class TestStrack(unittest.TestCase):
         client.get_location.assert_called_with("mock_download_url_1338")
         self.assertEquals(2, client.get_location.call_count)
 
-    def test_generate_local_filename(self):
+    def test_gen_filename(self):
         """
         Test generated local filename look like this:
         {id}-{permalink}.{ext}.
         """
         client = Mock()
         object = strack(json_data[2], client=client)
-        self.assertEquals("1339-baz.wav", object.generate_local_filename())
+        self.assertEquals("1339-baz.wav", object.gen_filename())
 
-    def test_generate_local_directory(self):
+    def test_gen_localdir(self):
         """
         Test local  directory generated is
         concatenated with track's username.
@@ -142,7 +142,7 @@ class TestStrack(unittest.TestCase):
         client = Mock()
         object = strack(json_data[0], client=client)
 
-        dir = object.generate_local_directory(self.tmpdir)
+        dir = object.gen_localdir(self.tmpdir)
         self.assertEquals("%s/user1/" % self.tmpdir, dir)
         if not os.path.exists(dir):
             self.fail("Generate local directory must create it if not exists.")

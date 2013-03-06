@@ -24,10 +24,10 @@ class sclient:
     client_id = None
 
     SC_HOME = "https://www.soundcloud.com"
-    DOWNLOAD_URL = "/tracks/%s/download?client_id="
-    STREAM_URL = "/tracks/%s/stream?client_id="
-    USER_LIKES = "/users/%s/favorites.json?offset=%s&limit=%s&client_id="
-    USER_TRACKS = "/users/%s/tracks.json?offset=%s&limit=%s&client_id="
+    DOWNLOAD_URL = "/tracks/%d/download?client_id="
+    STREAM_URL = "/tracks/%d/stream?client_id="
+    USER_LIKES = "/users/%s/favorites.json?offset=%d&limit=%d&client_id="
+    USER_TRACKS = "/users/%s/tracks.json?offset=%d&limit=%d&client_id="
 
     def __init__(self, client_id=None, **kwargs):
         """ Http client initialization. """
