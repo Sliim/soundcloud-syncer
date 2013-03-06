@@ -23,7 +23,7 @@ sys.path.insert(0, "../../")
 from ssyncer.suser import suser
 from ssyncer.strack import strack
 
-def mock_get_likes_success(uri):
+def mock_tracks_response(uri):
     def json_res():
         return b'[{"kind":"track","id":1337,"title":"Foo","permalink":"foo","downloadable":true,"user":{"permalink":"user1"}, "original_format":"mp3"},{"kind":"track","id":1338,"title":"Bar","permalink":"bar","downloadable":true,"user":{"permalink":"user2"}, "original_format":"mp3"},{"kind":"track","id":1339,"title":"Baz","permalink":"baz","downloadable":true,"user":{"permalink":"user3"}, "original_format":"wav"}]'
 
@@ -39,37 +39,51 @@ class TestSuser(unittest.TestCase):
         object = suser("Foo", client=client)
         self.assertEqual("Foo", object.name)
 
-    def test_get_likes_on_success(self):
-        """ Test get user's likes when success. """
+    def test_parse_tracks_response(self):
+        """ Test parse tracks response on success. """
         client = MagicMock()
-        client.get = Mock(side_effect=mock_get_likes_success)
         object = suser("Foo", client=client)
-
-        likes = object.get_likes()
-        self.assertEquals(3, len(likes))
-        for like in likes:
-            self.assertIsInstance(like, strack)
+        tracks = object._parse_tracks_response(mock_tracks_response("bar"))
+        self.assertEquals(3, len(tracks))
+        for track in tracks:
+            self.assertIsInstance(track, strack)
 
     def test_get_likes_with_default_offset_and_limit(self):
         """ Test get user's likes with default offset and limit. """
         client = MagicMock()
         client.USER_LIKES = "/users/%s/favorites.json?offset=%s&limit=%s&client_id="
-        client.get = Mock(side_effect=mock_get_likes_success)
         object = suser("Foo", client=client)
-
+        object._parse_tracks_response = Mock()
         object.get_likes()
         client.get.assert_called_once_with(
-            "/users/Foo/favorites.json?offset=0&limit=50&client_id="
-        )
+            "/users/Foo/favorites.json?offset=0&limit=50&client_id=")
 
     def test_get_likes_with_custom_offset_and_limit(self):
         """ Test get user's likes with custom offset and limit. """
         client = MagicMock()
         client.USER_LIKES = "/users/%s/favorites.json?offset=%s&limit=%s&client_id="
-        client.get = Mock(side_effect=mock_get_likes_success)
         object = suser("Foo", client=client)
-
+        object._parse_tracks_response = Mock()
         object.get_likes(10, 20)
         client.get.assert_called_once_with(
-            "/users/Foo/favorites.json?offset=10&limit=20&client_id="
-        )
+            "/users/Foo/favorites.json?offset=10&limit=20&client_id=")
+
+    def test_get_tracks_with_default_offset_and_limit(self):
+        """ Test get user's tracks with default offset and limit. """
+        client = MagicMock()
+        client.USER_LIKES = "/users/%s/tracks.json?offset=%s&limit=%s&client_id="
+        object = suser("Foo", client=client)
+        object._parse_tracks_response = Mock()
+        object.get_likes()
+        client.get.assert_called_once_with(
+            "/users/Foo/tracks.json?offset=0&limit=50&client_id=")
+
+    def test_get_tracks_with_custom_offset_and_limit(self):
+        """ Test get user's tracks with custom offset and limit. """
+        client = MagicMock()
+        client.USER_LIKES = "/users/%s/tracks.json?offset=%s&limit=%s&client_id="
+        object = suser("Foo", client=client)
+        object._parse_tracks_response = Mock()
+        object.get_likes(10, 20)
+        client.get.assert_called_once_with(
+            "/users/Foo/tracks.json?offset=10&limit=20&client_id=")

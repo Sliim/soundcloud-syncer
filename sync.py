@@ -28,23 +28,23 @@ parser.add_argument("-o", "--output-dir", help="Output directory", type=str, req
 parser.add_argument("-O", "--offset", help="Tracks offset", type=int)
 parser.add_argument("-L", "--limit", help="Tracks limit (max: 200)", type=int)
 parser.add_argument("-r", "--recursive", help="Recursive download", action="store_true")
+parser.add_argument("-t", "--tracks", help="Download user's tracks instead user's likes", action="store_true")
 
-def likes_downloader(user, offset, limit):
-    """ Download user's likes. Return number of tracks downloaded. """
+def downloader(tgetter, output, *args):
+    """ Download tracks. Return number of tracks downloaded. """
     try:
-        likes = suser.get_likes(offset, limit)
+        tracks = tgetter(*args)
     except serror as e:
         print(e)
         return False
 
-    for strack in likes:
-        print("Start downloading %s (%s).." % (strack.get("title"), strack.get("id")))
+    for strack in tracks:
         try:
-            strack.download(args.output_dir)
+            strack.download(output)
         except serror as e:
             print(e)
 
-    return len(likes)
+    return len(tracks)
 
 args = parser.parse_args()
 
@@ -69,12 +69,16 @@ except serror as e:
     print(e)
     exit(3)
 
+tracks_getter = suser.get_likes
+if args.tracks:
+    tracks_getter = suser.get_tracks
+
 if args.recursive:
     while True:
-        nb = likes_downloader(suser, offset, limit)
+        nb = downloader(tracks_getter, args.output_dir, offset, limit)
         if nb == 0:
             break
 
         offset = offset + limit
 else:
-    likes_downloader(suser, offset, limit)
+    downloader(tracks_getter, args.output_dir, offset, limit)

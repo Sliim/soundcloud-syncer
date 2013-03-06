@@ -98,6 +98,7 @@ class strack:
             raise serror("Can't download track_id:%d|%s" % (self.get("id"), self.get("title")))
 
         try:
+            print("Start downloading %s (%s).." % (self.get("title"), self.get("id")))
             urllib.request.urlretrieve(dlurl, local_file, self._progress_hook)
         except:
             os.remove(local_file)

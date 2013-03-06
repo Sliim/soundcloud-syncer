@@ -36,11 +36,19 @@ class suser:
     def get_likes(self, offset=0, limit=50):
         """ Get user's likes. """
         response = self.client.get(self.client.USER_LIKES % (self.name, offset, limit))
+        return self._parse_tracks_response(response)
 
-        tracks = json.loads(response.read().decode("utf-8"))
-        likes = []
+    def get_tracks(self, offset=0, limit=50):
+        """ Get user's tracks. """
+        response = self.client.get(self.client.USER_TRACKS % (self.name, offset, limit))
+        return self._parse_tracks_response(response)
 
-        for track in tracks:
-            likes.append(strack(track, client=self.client))
+    def _parse_tracks_response(self, response):
+        """ Parse http response that contents tracks list. """
+        objects = json.loads(response.read().decode("utf-8"))
+        tracks = []
 
-        return likes
+        for track in objects:
+            tracks.append(strack(track, client=self.client))
+
+        return tracks
