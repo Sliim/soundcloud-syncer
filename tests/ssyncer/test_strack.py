@@ -22,7 +22,7 @@ from mock import Mock
 sys.path.insert(0, "../../")
 from ssyncer.strack import strack
 
-json_data = json.loads('[{"kind":"track","id":1337,"title":"Foo","permalink":"foo","downloadable":true,"user":{"permalink":"user1"}},{"kind":"track","id":1338,"title":"Bar","permalink":"bar","downloadable":false,"user":{"permalink":"user2"}},{"kind":"track","id":1339,"title":"Baz","permalink":"baz","downloadable":true,"user":{"permalink":"user3"}}]')
+json_data = json.loads('[{"kind":"track","id":1337,"title":"Foo","permalink":"foo","downloadable":true,"user":{"permalink":"user1"}, "original_format":"mp3"},{"kind":"track","id":1338,"title":"Bar","permalink":"bar","downloadable":false,"user":{"permalink":"user2"}, "original_format":"mp3"},{"kind":"track","id":1339,"title":"Baz","permalink":"baz","downloadable":true,"user":{"permalink":"user3"}, "original_format":"wav"}]')
 
 class TestStrack(unittest.TestCase):
 
@@ -46,6 +46,7 @@ class TestStrack(unittest.TestCase):
         self.assertEquals("foo", object.get("permalink"))
         self.assertEquals("user1", object.get("username"))
         self.assertTrue(object.get("downloadable"))
+        self.assertEquals("mp3", object.get("ext"))
 
         object = strack(json_data[1], client=client)
         self.assertEquals(1338, object.get("id"))
@@ -53,6 +54,7 @@ class TestStrack(unittest.TestCase):
         self.assertEquals("bar", object.get("permalink"))
         self.assertEquals("user2", object.get("username"))
         self.assertFalse(object.get("downloadable"))
+        self.assertEquals("mp3", object.get("ext"))
 
         object = strack(json_data[2], client=client)
         self.assertEquals(1339, object.get("id"))
@@ -60,6 +62,7 @@ class TestStrack(unittest.TestCase):
         self.assertEquals("baz", object.get("permalink"))
         self.assertEquals("user3", object.get("username"))
         self.assertTrue(object.get("downloadable"))
+        self.assertEquals("wav", object.get("ext"))
 
     def test_get_unknown_metadata(self):
         """ Test attempt to get an unknown metadata return None. """
@@ -105,10 +108,10 @@ class TestStrack(unittest.TestCase):
         self.assertEquals(2 , client.get_location.call_count)
 
     def test_generate_local_filename(self):
-        """ Test generated local filename look like this: {id}-{permalink}.mp3. """
+        """ Test generated local filename look like this: {id}-{permalink}.{ext}. """
         client = Mock()
-        object = strack(json_data[0], client=client)
-        self.assertEquals("1337-foo.mp3", object.generate_local_filename())
+        object = strack(json_data[2], client=client)
+        self.assertEquals("1339-baz.wav", object.generate_local_filename())
 
     def test_generate_local_directory(self):
         """ Test local  directory generated is concatenated with track's username. """

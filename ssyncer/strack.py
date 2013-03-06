@@ -39,7 +39,8 @@ class strack:
             "title": track_data["title"],
             "permalink": track_data["permalink"],
             "username": track_data["user"]["permalink"],
-            "downloadable": track_data["downloadable"]
+            "downloadable": track_data["downloadable"],
+            "ext": track_data["original_format"],
         }
 
     def get(self, key):
@@ -67,7 +68,7 @@ class strack:
 
     def generate_local_filename(self):
         """ Generate local filename for this track. """
-        return "{0}-{1}.mp3".format(self.get("id"), self.get("permalink"))
+        return "{0}-{1}.{2}".format(self.get("id"), self.get("permalink"), self.get("ext"))
 
     def generate_local_directory(self, local_dir):
         """ Generate local directory where track will be saved. Create it if not exists. """
