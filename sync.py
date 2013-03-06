@@ -49,7 +49,7 @@ def downloader(tgetter, output, *args):
 args = parser.parse_args()
 
 if not os.path.exists(args.output_dir):
-    print("Error: output directory `%s` doesn's exists." % args.output_dir)
+    print(serror("Error: output directory `%s` doesn's exists." % args.output_dir))
     exit(1)
 
 offset = 0
@@ -58,7 +58,7 @@ if args.offset:
     offset = args.offset
 if args.limit:
     if args.limit > 200:
-        print("Error: tracks limit limited to 200 tracks..")
+        print(serror("Error: tracks limit limited to 200 tracks.."))
         exit(2)
     limit = args.limit
 
