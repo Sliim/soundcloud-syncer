@@ -32,6 +32,8 @@ class TestStrack(unittest.TestCase):
             os.remove("/tmp/user1/1337-foo.mp3")
         if os.path.exists("/tmp/user1"):
             os.rmdir("/tmp/user1")
+        if os.path.exists("/tmp/.ignore"):
+            os.remove("/tmp/.ignore")
 
     def test_metadata(self):
         """
@@ -145,3 +147,23 @@ class TestStrack(unittest.TestCase):
 
         os.remove("/tmp/user1/1337-foo.mp3")
         os.rmdir("/tmp/user1")
+
+    def test_get_track_ignored(self):
+        """ Test get track ignored list. """
+        f = open("/tmp/.ignore", "w")
+        f.write("foo\nbar\nbaz")
+        f.close()
+
+        client = Mock()
+        object = strack(json_data[0], client=client)
+        ignored = object.get_ignored_tracks("/tmp")
+        self.assertIn("/tmp/foo", ignored)
+        self.assertIn("/tmp/bar", ignored)
+        self.assertIn("/tmp/baz", ignored)
+
+    def test_get_track_ignored_not_ignore_file(self):
+        """ Test get track ignored list when ignore file doesn't exists. """
+        client = Mock()
+        object = strack(json_data[0], client=client)
+        ignored = object.get_ignored_tracks("/tmp")
+        self.assertEquals(0, len(ignored))

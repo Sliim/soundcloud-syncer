@@ -84,12 +84,30 @@ class strack:
             return True
         return False
 
+    def get_ignored_tracks(self, local_dir):
+        """ Get ignored tracks list. """
+        ignore_file = "%s/.ignore" % local_dir
+        list = []
+        if os.path.exists(ignore_file):
+            f = open(ignore_file)
+            ignored = f.readlines()
+            f.close()
+
+            for i in ignored:
+                list.append("%s/%s" % (local_dir, i.rstrip()))
+
+        return list
+
     def download(self, local_dir):
         """ Download a track in local directory. """
         local_file = self.generate_local_directory(local_dir) + self.generate_local_filename()
 
         if self.track_exists(local_dir):
             print("INFO: Track {0} already downloaded, skipping!".format(self.get("id")))
+            return False
+
+        if local_file in self.get_ignored_tracks(local_dir):
+            print("\033[93mINFO: Track {0} ignored, skipping!!\033[0m".format(self.get("id")))
             return False
 
         dlurl = self.get_download_link()
