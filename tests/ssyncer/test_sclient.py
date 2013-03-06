@@ -16,6 +16,8 @@
 import sys
 import unittest
 
+from mock import Mock
+
 sys.path.insert(0, "../../")
 from ssyncer.sclient import sclient
 
@@ -26,6 +28,15 @@ class TestSclient(unittest.TestCase):
         """ Test basic object initialization. """
         object = sclient("my_id")
         self.assertEquals("my_id", object.client_id)
+
+    def test_init_auto_get_client_id(self):
+        """
+        Test object init get automatically client_id
+        when not passed in args.
+        """
+        sclient.get_client_id = Mock()
+        sclient()
+        sclient.get_client_id.assert_called_once()
 
     def test_init_with_kwargs(self):
         """ Test object initialization with kwargs. """

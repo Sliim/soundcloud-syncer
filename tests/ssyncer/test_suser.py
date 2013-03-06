@@ -73,19 +73,19 @@ class TestSuser(unittest.TestCase):
     def test_get_tracks_with_default_offset_and_limit(self):
         """ Test get user's tracks with default offset and limit. """
         client = MagicMock()
-        client.USER_LIKES = "/u/%s/t.json?o=%d&l=%d&c="
+        client.USER_TRACKS = "/u/%s/t.json?o=%d&l=%d&c="
         object = suser("Foo", client=client)
         object._parse_tracks_response = Mock()
-        object.get_likes()
+        object.get_tracks()
         client.get.assert_called_once_with(
             "/u/Foo/t.json?o=0&l=50&c=")
 
     def test_get_tracks_with_custom_offset_and_limit(self):
         """ Test get user's tracks with custom offset and limit. """
         client = MagicMock()
-        client.USER_LIKES = "/u/%s/t.json?o=%d&l=%d&c="
+        client.USER_TRACKS = "/u/%s/t.json?o=%d&l=%d&c="
         object = suser("Foo", client=client)
         object._parse_tracks_response = Mock()
-        object.get_likes(10, 20)
+        object.get_tracks(10, 20)
         client.get.assert_called_once_with(
             "/u/Foo/t.json?o=10&l=20&c=")
