@@ -10,23 +10,24 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License along
-# with Soundcloud-syncer. If not, see <http://www.gnu.org/licenses/gpl-3.0.html>.
+# You should have received a copy of the GNU General Public License along with
+# Soundcloud-syncer. If not, see <http://www.gnu.org/licenses/gpl-3.0.html>.
 
 import re
 import urllib.request
 from ssyncer.serror import serror
+
 
 class sclient:
     host = "api.soundcloud.com"
     port = "443"
     client_id = None
 
-    SC_HOME      = "https://www.soundcloud.com"
+    SC_HOME = "https://www.soundcloud.com"
     DOWNLOAD_URL = "/tracks/%s/download?client_id="
-    STREAM_URL   = "/tracks/%s/stream?client_id="
-    USER_LIKES   = "/users/%s/favorites.json?offset=%s&limit=%s&client_id="
-    USER_TRACKS  = "/users/%s/tracks.json?offset=%s&limit=%s&client_id="
+    STREAM_URL = "/tracks/%s/stream?client_id="
+    USER_LIKES = "/users/%s/favorites.json?offset=%s&limit=%s&client_id="
+    USER_TRACKS = "/users/%s/tracks.json?offset=%s&limit=%s&client_id="
 
     def __init__(self, client_id=None, **kwargs):
         """ Http client initialization. """
@@ -53,7 +54,9 @@ class sclient:
         try:
             return urllib.request.urlopen(url)
         except urllib.error.HTTPError as e:
-            raise serror("Request `%s` failed (%s:%s)." % (url, e.__class__.__name__, e.code))
+            raise serror(
+                "Request `%s` failed (%s:%s)." %
+                (url, e.__class__.__name__, e.code))
 
     def get(self, uri):
         """ Send a request to given uri. """

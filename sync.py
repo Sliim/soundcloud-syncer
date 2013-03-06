@@ -11,8 +11,8 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License along
-# with Soundcloud-syncer. If not, see <http://www.gnu.org/licenses/gpl-3.0.html>.
+# You should have received a copy of the GNU General Public License along with
+# Soundcloud-syncer. If not, see <http://www.gnu.org/licenses/gpl-3.0.html>.
 
 import argparse
 import os.path
@@ -29,6 +29,7 @@ parser.add_argument("-O", "--offset", help="Tracks offset", type=int)
 parser.add_argument("-L", "--limit", help="Tracks limit (max: 200)", type=int)
 parser.add_argument("-r", "--recursive", help="Recursive download", action="store_true")
 parser.add_argument("-t", "--tracks", help="Download user's tracks instead user's likes", action="store_true")
+
 
 def downloader(tgetter, output, *args):
     """ Download tracks. Return number of tracks downloaded. """
@@ -49,7 +50,8 @@ def downloader(tgetter, output, *args):
 args = parser.parse_args()
 
 if not os.path.exists(args.output_dir):
-    print(serror("Error: output directory `%s` doesn's exists." % args.output_dir))
+    print(serror("Error: output directory `%s` doesn's exists." %
+                 args.output_dir))
     exit(1)
 
 offset = 0

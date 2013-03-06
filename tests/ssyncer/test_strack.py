@@ -10,8 +10,8 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License along
-# with Soundcloud-syncer. If not, see <http://www.gnu.org/licenses/gpl-3.0.html>.
+# You should have received a copy of the GNU General Public License along with
+# Soundcloud-syncer. If not, see <http://www.gnu.org/licenses/gpl-3.0.html>.
 
 import sys
 import os
@@ -24,6 +24,7 @@ from ssyncer.strack import strack
 
 json_data = json.loads('[{"kind":"track","id":1337,"title":"Foo","permalink":"foo","downloadable":true,"user":{"permalink":"user1"}, "original_format":"mp3"},{"kind":"track","id":1338,"title":"Bar","permalink":"bar","downloadable":false,"user":{"permalink":"user2"}, "original_format":"mp3"},{"kind":"track","id":1339,"title":"Baz","permalink":"baz","downloadable":true,"user":{"permalink":"user3"}, "original_format":"wav"}]')
 
+
 class TestStrack(unittest.TestCase):
 
     tmpdir = "/tmp/stests"
@@ -34,7 +35,10 @@ class TestStrack(unittest.TestCase):
             os.mkdir(self.tmpdir)
 
     def tearDown(self):
-        """ This testsuite create temporary dir/files. Delete them after each tests. """
+        """
+        This testsuite create temporary dir/files.
+        Delete them after each tests.
+        """
         if os.path.exists("%s/user1/1337-foo.mp3" % self.tmpdir):
             os.remove("%s/user1/1337-foo.mp3" % self.tmpdir)
         if os.path.exists("%s/user1" % self.tmpdir):
@@ -91,7 +95,7 @@ class TestStrack(unittest.TestCase):
         object = strack(json_data[0], client=client)
         self.assertEquals("http://lost.iya", object.get_download_link())
         client.get_location.assert_called_once_with("mock_download_url_1337")
-        self.assertEquals(1 , client.get_location.call_count)
+        self.assertEquals(1, client.get_location.call_count)
 
     def test_get_download_link_not_downloadable(self):
         """ Test get download link from stream url. """
@@ -103,10 +107,13 @@ class TestStrack(unittest.TestCase):
         object = strack(json_data[1], client=client)
         self.assertEquals("http://lost.iya", object.get_download_link())
         client.get_location.assert_called_with("mock_stream_url_1338")
-        self.assertEquals(1 , client.get_location.call_count)
+        self.assertEquals(1, client.get_location.call_count)
 
     def test_get_download_link_not_downloadable_and_streamable(self):
-        """ Test that get_download_link method return None when track isn't downloadble and streamable. """
+        """
+        Test that get_download_link method return None
+        when track isn't downloadble and streamable.
+        """
         client = Mock()
         client.DOWNLOAD_URL = "mock_download_url_%s"
         client.STREAM_URL = "mock_stream_url_%s"
@@ -116,23 +123,29 @@ class TestStrack(unittest.TestCase):
         object = strack(json_data[1], client=client)
         self.assertEquals(None, object.get_download_link())
         client.get_location.assert_called_with("mock_download_url_1338")
-        self.assertEquals(2 , client.get_location.call_count)
+        self.assertEquals(2, client.get_location.call_count)
 
     def test_generate_local_filename(self):
-        """ Test generated local filename look like this: {id}-{permalink}.{ext}. """
+        """
+        Test generated local filename look like this:
+        {id}-{permalink}.{ext}.
+        """
         client = Mock()
         object = strack(json_data[2], client=client)
         self.assertEquals("1339-baz.wav", object.generate_local_filename())
 
     def test_generate_local_directory(self):
-        """ Test local  directory generated is concatenated with track's username. """
+        """
+        Test local  directory generated is
+        concatenated with track's username.
+        """
         client = Mock()
         object = strack(json_data[0], client=client)
 
         dir = object.generate_local_directory(self.tmpdir)
         self.assertEquals("%s/user1/" % self.tmpdir, dir)
         if not os.path.exists(dir):
-            self.fail("Generate local directory must create directory if not exists.")
+            self.fail("Generate local directory must create it if not exists.")
         os.rmdir(dir)
 
     def test_track_not_exists(self):
@@ -145,7 +158,7 @@ class TestStrack(unittest.TestCase):
         """ Test track exists. """
         os.mkdir("%s/user1" % self.tmpdir)
         f = open("%s/user1/1337-foo.mp3" % self.tmpdir, "w")
-        f.write("0"*5)
+        f.write("0" * 5)
         f.close()
 
         client = Mock()

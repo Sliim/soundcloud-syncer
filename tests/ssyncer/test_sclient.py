@@ -10,14 +10,15 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License along
-# with Soundcloud-syncer. If not, see <http://www.gnu.org/licenses/gpl-3.0.html>.
+# You should have received a copy of the GNU General Public License along with
+# Soundcloud-syncer. If not, see <http://www.gnu.org/licenses/gpl-3.0.html>.
 
 import sys
 import unittest
 
 sys.path.insert(0, "../../")
 from ssyncer.sclient import sclient
+
 
 class TestSclient(unittest.TestCase):
 

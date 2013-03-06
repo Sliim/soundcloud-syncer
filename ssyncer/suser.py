@@ -10,12 +10,13 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License along
-# with Soundcloud-syncer. If not, see <http://www.gnu.org/licenses/gpl-3.0.html>.
+# You should have received a copy of the GNU General Public License along with
+# Soundcloud-syncer. If not, see <http://www.gnu.org/licenses/gpl-3.0.html>.
 
 from ssyncer.sclient import sclient
 from ssyncer.strack import strack
 import json
+
 
 class suser:
 
@@ -35,12 +36,14 @@ class suser:
 
     def get_likes(self, offset=0, limit=50):
         """ Get user's likes. """
-        response = self.client.get(self.client.USER_LIKES % (self.name, offset, limit))
+        response = self.client.get(
+            self.client.USER_LIKES % (self.name, offset, limit))
         return self._parse_tracks_response(response)
 
     def get_tracks(self, offset=0, limit=50):
         """ Get user's tracks. """
-        response = self.client.get(self.client.USER_TRACKS % (self.name, offset, limit))
+        response = self.client.get(
+            self.client.USER_TRACKS % (self.name, offset, limit))
         return self._parse_tracks_response(response)
 
     def _parse_tracks_response(self, response):
