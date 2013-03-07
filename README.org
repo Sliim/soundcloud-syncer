@@ -1,12 +1,11 @@
 * Soundcloud Syncer
 [[http://travis-ci.org/Sliim/soundcloud-syncer][http://secure.travis-ci.org/Sliim/soundcloud-syncer.png?branch=master]]
 
-Soundcloud-syncer is a tool to sync soundcloud  user's favorites tracks locally.
-
+Soundcloud-syncer is a tool to synchronize soundcloud user's favorites and tracks locally.
 
 ** Requirements
 *** Python version
-- Python 3.2 (not tested yet with python 2.7).
+1. Python 3.2.
 *** Run unittests
 To run unitests you will need following packages:
 - mock
@@ -24,20 +23,52 @@ pip-3.2 install mock nose coverage
 git clone https://github.com/Sliim/soundcloud-syncer.git
 #+END_SRC
 
-- Move into directory cloned and run ~sync.py~ script:
+- Move into cloned directory and run ~sync.py~ script:
 #+BEGIN_SRC shell
 mv soundcloud-syncer
 ./sync.py --help
 #+END_SRC
 
-- Basic usage:
+*** Basic usage
+- Download user's likes:
 #+BEGIN_SRC shell
-./sync.py -u USER_TO_SYNC -c YOUR_CLIENT_ID -o OUTPUT_DIRECTORY
+./sync.py -u USER_TO_SYNC -o OUTPUT_DIRECTORY
 #+END_SRC
 
+- Download user's tracks:
+#+BEGIN_SRC shell
+./sync.py -u USER_TO_SYNC -o OUTPUT_DIRECTORY -t
+#+END_SRC
+
+- You can download tracks recursively:
+#+BEGIN_SRC shell
+./sync.py -u USER_TO_SYNC -o OUTPUT_DIRECTORY -t -r
+#+END_SRC
+
+- To set offset and limit for tracks list:
+#+BEGIN_SRC shell
+./sync.py -u USER_TO_SYNC -o OUTPUT_DIRECTORY -L LIMIT -O OFFSET
+#+END_SRC
+/!\ Limit can't be greater than 200.
+
+** Ignoring tracks
+You can ignore some tracks you don't want to sync locally.
+
+To do this create a file in OUTPUT_DIRECTORY named ~.ignore~.
+Each track in this file will be ignored.
+
+- Example:
+To ignore https://soundcloud.com/trapmusic/vexed-goodbye-by-j-nitrous add in ~.ignore~ file:
+#+BEGIN_SRC txt
+trapmusic/vexed-goodbye-by-j-nitrous
+#+END_SRC
 ** Features
-- Get user's favorites tracks list.
-- Download tracks.
+- Download user's favorites / likes tracks list.
+- Download user's tracks list.
+- Possibility to set offset and limit for tracks list.
+- Auto find client_id when not passed to sync script.
 - Check if track exists locally before download it.
+- Possibility to ignore some tracks to sync.
+- Recursive download.
 ** License
    See COPYING file
