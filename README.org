@@ -25,7 +25,7 @@ git clone https://github.com/Sliim/soundcloud-syncer.git
 
 - Move into cloned directory and run ~sync.py~ script:
 #+BEGIN_SRC shell
-mv soundcloud-syncer
+cd soundcloud-syncer
 ./sync.py --help
 #+END_SRC
 
