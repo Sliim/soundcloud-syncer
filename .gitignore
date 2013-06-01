@@ -1,3 +1,6 @@
 __pycache__
 /tests/ssyncer/cover
 /.coverage
+/build
+/dist
+/MANIFEST
