@@ -5,7 +5,7 @@ Soundcloud-syncer is a tool to synchronize soundcloud user's favorites and track
 
 ** Requirements
 *** Python version
-1. Python 3.2.
+1. Python 3.x
 *** Run unittests
 To run unitests you will need following packages:
 - mock
@@ -17,37 +17,36 @@ Optionnaly you can install these packages:
 #+BEGIN_SRC shell
 pip-3.2 install mock nose coverage
 #+END_SRC
-** Usage
-- Clone repository:
+** Installation
+*** From Pypi
 #+BEGIN_SRC shell
-git clone https://github.com/Sliim/soundcloud-syncer.git
+pip3 install soundcloud-syncer
 #+END_SRC
-
-- Move into cloned directory and run ~sync.py~ script:
+*** From Github
 #+BEGIN_SRC shell
-mv soundcloud-syncer
-./sync.py --help
+git clone git@github.com/Sliim/soundcloud-syncer.git
+cd soundcloud-syncer
+./sc-syncer --help
 #+END_SRC
-
-*** Basic usage
+** Basic usage
 - Download user's likes:
 #+BEGIN_SRC shell
-./sync.py -u USER_TO_SYNC -o OUTPUT_DIRECTORY
+sc-syncer -u USER_TO_SYNC -o OUTPUT_DIRECTORY
 #+END_SRC
 
 - Download user's tracks:
 #+BEGIN_SRC shell
-./sync.py -u USER_TO_SYNC -o OUTPUT_DIRECTORY -t
+sc-syncer -u USER_TO_SYNC -o OUTPUT_DIRECTORY -t
 #+END_SRC
 
 - You can download tracks recursively:
 #+BEGIN_SRC shell
-./sync.py -u USER_TO_SYNC -o OUTPUT_DIRECTORY -t -r
+sc-syncer -u USER_TO_SYNC -o OUTPUT_DIRECTORY -t -r
 #+END_SRC
 
 - To set offset and limit for tracks list:
 #+BEGIN_SRC shell
-./sync.py -u USER_TO_SYNC -o OUTPUT_DIRECTORY -L LIMIT -O OFFSET
+sc-syncer -u USER_TO_SYNC -o OUTPUT_DIRECTORY -L LIMIT -O OFFSET
 #+END_SRC
 /!\ Limit can't be greater than 200.
 
