@@ -142,11 +142,11 @@ class strack:
         read = blocknum * blocksize
         if totalsize > 0:
             percent = read * 1e2 / totalsize
-            s = "\r%5.1f%% %*d / %d" % (
+            s = "\r%d%% %*d / %d" % (
                 percent, len(str(totalsize)), read, totalsize)
-            sys.stderr.write(s)
+            sys.stdout.write(s)
 
             if read >= totalsize:
-                sys.stderr.write("\n")
+                sys.stdout.write("\n")
         else:
-            sys.stderr.write("read %d\n" % read)
+            sys.stdout.write("read %d\n" % read)
