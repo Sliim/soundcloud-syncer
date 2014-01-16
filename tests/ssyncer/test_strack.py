@@ -15,14 +15,12 @@
 
 import sys
 import os
-import json
 import unittest
 from mock import Mock
 
 sys.path.insert(0, "../../")
 from ssyncer.strack import strack
-
-json_data = json.loads('[{"kind":"track","id":1337,"title":"Foo","permalink":"foo","downloadable":true,"user":{"permalink":"user1"}, "original_format":"mp3"},{"kind":"track","id":1338,"title":"Bar","permalink":"bar","downloadable":false,"user":{"permalink":"user2"}, "original_format":"mp3"},{"kind":"track","id":1339,"title":"Baz","permalink":"baz","downloadable":true,"user":{"permalink":"user3"}, "original_format":"wav"}]')
+from mock_data import json_obj
 
 
 class TestStrack(unittest.TestCase):
@@ -55,34 +53,76 @@ class TestStrack(unittest.TestCase):
         """
         client = Mock()
 
-        object = strack(json_data[0], client=client)
+        object = strack(json_obj[0], client=client)
         self.assertEquals(1337, object.get("id"))
         self.assertEquals("Foo", object.get("title"))
         self.assertEquals("foo", object.get("permalink"))
         self.assertEquals("user1", object.get("username"))
+        self.assertEquals("http://user1.dev", object.get("user-url"))
         self.assertTrue(object.get("downloadable"))
-        self.assertEquals("mp3", object.get("ext"))
+        self.assertEquals("mp3", object.get("original-format"))
+        self.assertEquals("247010", object.get("duration"))
+        self.assertEquals("9931892", object.get("original-content-size"))
+        self.assertEquals("dubstep bass", object.get("tags-list"))
+        self.assertEquals("Dubstep", object.get("genre"))
+        self.assertEquals("Some text", object.get("description"))
+        self.assertEquals("free", object.get("license"))
+        self.assertEquals("https://api.foobar.dev/1337", object.get("uri"))
+        self.assertEquals("2013/12/18 13:37:00 +0000",
+                          object.get("created-at"))
+        self.assertEquals("https://foobar.dev/1337",
+                          object.get("permalink-url"))
+        self.assertEquals("https://foobar.dev/1337.jpg",
+                          object.get("artwork-url"))
 
-        object = strack(json_data[1], client=client)
+        object = strack(json_obj[1], client=client)
         self.assertEquals(1338, object.get("id"))
         self.assertEquals("Bar", object.get("title"))
         self.assertEquals("bar", object.get("permalink"))
         self.assertEquals("user2", object.get("username"))
+        self.assertEquals("http://user2.dev", object.get("user-url"))
         self.assertFalse(object.get("downloadable"))
-        self.assertEquals("mp3", object.get("ext"))
+        self.assertEquals("mp3", object.get("original-format"))
+        self.assertEquals("247011", object.get("duration"))
+        self.assertEquals("9931893", object.get("original-content-size"))
+        self.assertEquals("trap bass", object.get("tags-list"))
+        self.assertEquals("Trap", object.get("genre"))
+        self.assertEquals("Some description", object.get("description"))
+        self.assertEquals("Common", object.get("license"))
+        self.assertEquals("https://api.foobar.dev/1338", object.get("uri"))
+        self.assertEquals("2013/12/18 13:37:01 +0000",
+                          object.get("created-at"))
+        self.assertEquals("https://foobar.dev/1338",
+                          object.get("permalink-url"))
+        self.assertEquals("https://foobar.dev/1338.jpg",
+                          object.get("artwork-url"))
 
-        object = strack(json_data[2], client=client)
+        object = strack(json_obj[2], client=client)
         self.assertEquals(1339, object.get("id"))
         self.assertEquals("Baz", object.get("title"))
         self.assertEquals("baz", object.get("permalink"))
         self.assertEquals("user3", object.get("username"))
+        self.assertEquals("http://user3.dev", object.get("user-url"))
         self.assertTrue(object.get("downloadable"))
-        self.assertEquals("wav", object.get("ext"))
+        self.assertEquals("wav", object.get("original-format"))
+        self.assertEquals("247012", object.get("duration"))
+        self.assertEquals("9931894", object.get("original-content-size"))
+        self.assertEquals("drumandbass bass", object.get("tags-list"))
+        self.assertEquals("D&B", object.get("genre"))
+        self.assertEquals("Awesome D&B", object.get("description"))
+        self.assertEquals("copyleft", object.get("license"))
+        self.assertEquals("https://api.foobar.dev/1339", object.get("uri"))
+        self.assertEquals("2013/12/18 13:37:02 +0000",
+                          object.get("created-at"))
+        self.assertEquals("https://foobar.dev/1339",
+                          object.get("permalink-url"))
+        self.assertEquals("https://foobar.dev/1339.jpg",
+                          object.get("artwork-url"))
 
     def test_get_unknown_metadata(self):
         """ Test attempt to get an unknown metadata return None. """
         client = Mock()
-        object = strack(json_data[0], client=client)
+        object = strack(json_obj[0], client=client)
         self.assertEquals(None, object.get("unknown"))
 
     def test_get_download_link(self):
@@ -92,7 +132,7 @@ class TestStrack(unittest.TestCase):
         client.STREAM_URL = "mock_stream_url_%d"
         client.get_location.return_value = "http://lost.iya"
 
-        object = strack(json_data[0], client=client)
+        object = strack(json_obj[0], client=client)
         self.assertEquals("http://lost.iya", object.get_download_link())
         client.get_location.assert_called_once_with("mock_download_url_1337")
         self.assertEquals(1, client.get_location.call_count)
@@ -104,7 +144,7 @@ class TestStrack(unittest.TestCase):
         client.STREAM_URL = "mock_stream_url_%d"
         client.get_location.return_value = "http://lost.iya"
 
-        object = strack(json_data[1], client=client)
+        object = strack(json_obj[1], client=client)
         self.assertEquals("http://lost.iya", object.get_download_link())
         client.get_location.assert_called_with("mock_stream_url_1338")
         self.assertEquals(1, client.get_location.call_count)
@@ -120,7 +160,7 @@ class TestStrack(unittest.TestCase):
         client.get_location = Mock()
         client.get_location.return_value = None
 
-        object = strack(json_data[1], client=client)
+        object = strack(json_obj[1], client=client)
         self.assertEquals(None, object.get_download_link())
         client.get_location.assert_called_with("mock_download_url_1338")
         self.assertEquals(2, client.get_location.call_count)
@@ -131,7 +171,7 @@ class TestStrack(unittest.TestCase):
         {id}-{permalink}.{ext}.
         """
         client = Mock()
-        object = strack(json_data[2], client=client)
+        object = strack(json_obj[2], client=client)
         self.assertEquals("1339-baz.wav", object.gen_filename())
 
     def test_gen_localdir(self):
@@ -140,7 +180,7 @@ class TestStrack(unittest.TestCase):
         concatenated with track's username.
         """
         client = Mock()
-        object = strack(json_data[0], client=client)
+        object = strack(json_obj[0], client=client)
 
         dir = object.gen_localdir(self.tmpdir)
         self.assertEquals("%s/user1/" % self.tmpdir, dir)
@@ -151,7 +191,7 @@ class TestStrack(unittest.TestCase):
     def test_track_not_exists(self):
         """ Test track doesn't exists. """
         client = Mock()
-        object = strack(json_data[0], client=client)
+        object = strack(json_obj[0], client=client)
         self.assertFalse(object.track_exists(self.tmpdir))
 
     def test_track_exists(self):
@@ -162,7 +202,7 @@ class TestStrack(unittest.TestCase):
         f.close()
 
         client = Mock()
-        object = strack(json_data[0], client=client)
+        object = strack(json_obj[0], client=client)
         self.assertTrue(object.track_exists(self.tmpdir))
 
     def test_get_track_ignored(self):
@@ -172,7 +212,7 @@ class TestStrack(unittest.TestCase):
         f.close()
 
         client = Mock()
-        object = strack(json_data[0], client=client)
+        object = strack(json_obj[0], client=client)
         ignored = object.get_ignored_tracks(self.tmpdir)
         self.assertIn("%s/foo" % self.tmpdir, ignored)
         self.assertIn("%s/bar" % self.tmpdir, ignored)
@@ -181,6 +221,6 @@ class TestStrack(unittest.TestCase):
     def test_get_track_ignored_not_ignore_file(self):
         """ Test get track ignored list when ignore file doesn't exists. """
         client = Mock()
-        object = strack(json_data[0], client=client)
+        object = strack(json_obj[0], client=client)
         ignored = object.get_ignored_tracks(self.tmpdir)
         self.assertEquals(0, len(ignored))

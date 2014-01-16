@@ -40,8 +40,19 @@ class strack:
             "title": track_data["title"],
             "permalink": track_data["permalink"],
             "username": track_data["user"]["permalink"],
+            "user-url": track_data["user"]["permalink_url"],
             "downloadable": track_data["downloadable"],
-            "ext": track_data["original_format"],
+            "original-format": track_data["original_format"],
+            "created-at": track_data["created_at"],
+            "duration": track_data["duration"],
+            "original-content-size": track_data["original_content_size"],
+            "tags-list": track_data["tags_list"],
+            "genre": track_data["genre"],
+            "description": track_data["description"],
+            "license": track_data["license"],
+            "uri": track_data["uri"],
+            "permalink-url": track_data["permalink_url"],
+            "artwork-url": track_data["artwork_url"],
         }
 
     def get(self, key):
@@ -74,7 +85,7 @@ class strack:
         return "{0}-{1}.{2}".format(
             self.get("id"),
             self.get("permalink"),
-            self.get("ext"))
+            self.get("original-format"))
 
     def gen_localdir(self, localdir):
         """

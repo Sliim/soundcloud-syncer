@@ -22,11 +22,12 @@ from mock import MagicMock
 sys.path.insert(0, "../../")
 from ssyncer.suser import suser
 from ssyncer.strack import strack
+from mock_data import json_bytes
 
 
 def mock_tracks_response(uri):
     def json_res():
-        return b'[{"kind":"track","id":1337,"title":"Foo","permalink":"foo","downloadable":true,"user":{"permalink":"user1"}, "original_format":"mp3"},{"kind":"track","id":1338,"title":"Bar","permalink":"bar","downloadable":true,"user":{"permalink":"user2"}, "original_format":"mp3"},{"kind":"track","id":1339,"title":"Baz","permalink":"baz","downloadable":true,"user":{"permalink":"user3"}, "original_format":"wav"}]'
+        return json_bytes
 
     response = MagicMock()
     response.read = json_res
