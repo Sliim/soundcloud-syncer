@@ -52,7 +52,7 @@ class strack:
             "license": track_data["license"],
             "uri": track_data["uri"],
             "permalink-url": track_data["permalink_url"],
-            "artwork-url": track_data["artwork_url"],
+            "artwork-url": track_data["artwork_url"] .replace("large", "crop"),
         }
 
     def get(self, key):

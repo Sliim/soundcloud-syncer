@@ -72,7 +72,7 @@ class TestStrack(unittest.TestCase):
                           object.get("created-at"))
         self.assertEquals("https://foobar.dev/1337",
                           object.get("permalink-url"))
-        self.assertEquals("https://foobar.dev/1337.jpg",
+        self.assertEquals("https://foobar.dev/1337-crop.jpg",
                           object.get("artwork-url"))
 
         object = strack(json_obj[1], client=client)
@@ -94,7 +94,7 @@ class TestStrack(unittest.TestCase):
                           object.get("created-at"))
         self.assertEquals("https://foobar.dev/1338",
                           object.get("permalink-url"))
-        self.assertEquals("https://foobar.dev/1338.jpg",
+        self.assertEquals("https://foobar.dev/1338-crop.jpg",
                           object.get("artwork-url"))
 
         object = strack(json_obj[2], client=client)
@@ -116,7 +116,7 @@ class TestStrack(unittest.TestCase):
                           object.get("created-at"))
         self.assertEquals("https://foobar.dev/1339",
                           object.get("permalink-url"))
-        self.assertEquals("https://foobar.dev/1339.jpg",
+        self.assertEquals("https://foobar.dev/1339-crop.jpg",
                           object.get("artwork-url"))
 
     def test_get_unknown_metadata(self):

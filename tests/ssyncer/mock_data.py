@@ -35,7 +35,7 @@ json_bytes = b'''[{
     "license":"free",
     "uri":"https://api.foobar.dev/1337",
     "permalink_url":"https://foobar.dev/1337",
-    "artwork_url":"https://foobar.dev/1337.jpg"
+    "artwork_url":"https://foobar.dev/1337-large.jpg"
 }, {
     "downloadable": false,
     "id": 1338,
@@ -56,7 +56,7 @@ json_bytes = b'''[{
     "license":"Common",
     "uri":"https://api.foobar.dev/1338",
     "permalink_url":"https://foobar.dev/1338",
-    "artwork_url":"https://foobar.dev/1338.jpg"
+    "artwork_url":"https://foobar.dev/1338-large.jpg"
 }, {
     "downloadable": true,
     "id": 1339,
@@ -77,7 +77,7 @@ json_bytes = b'''[{
     "license":"copyleft",
     "uri":"https://api.foobar.dev/1339",
     "permalink_url":"https://foobar.dev/1339",
-    "artwork_url":"https://foobar.dev/1339.jpg"
+    "artwork_url":"https://foobar.dev/1339-large.jpg"
 }
 ]'''
 json_obj = json.loads(json_bytes.decode("utf-8"))
