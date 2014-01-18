@@ -19,8 +19,10 @@ import unittest
 from mock import Mock
 
 sys.path.insert(0, "../../")
-from ssyncer.strack import strack
+from ssyncer.strack import strack, stag
 from mock_data import json_obj
+
+from stagger.id3 import *
 
 
 class TestStrack(unittest.TestCase):
@@ -224,3 +226,47 @@ class TestStrack(unittest.TestCase):
         object = strack(json_obj[0], client=client)
         ignored = object.get_ignored_tracks(self.tmpdir)
         self.assertEquals(0, len(ignored))
+
+
+class TestStag(unittest.TestCase):
+
+    def test_init_object(self):
+        """ Test init stag object"""
+        tag = stag()
+        from stagger.tags import Tag24
+        self.assertIsInstance(tag.mapper, Tag24)
+
+    def test_load_id3(self):
+        """ Test load id3 tags """
+        tag = stag()
+        client = Mock()
+
+        track = strack(json_obj[0], client=client)
+
+        tag.load_id3(track)
+
+        self.assertEqual("Some text", tag.mapper._frames["TIT1"][0].text[0])
+        self.assertEqual("Foo", tag.mapper._frames["TIT2"][0].text[0])
+        self.assertEqual("dubstep bass", tag.mapper._frames["TIT3"][0].text[0])
+        self.assertEqual("2013", tag.mapper._frames["TYER"][0].text[0])
+        self.assertEqual("1812", tag.mapper._frames["TDAT"][0].text[0])
+        self.assertEqual("1337", tag.mapper._frames["TIME"][0].text[0])
+        self.assertEqual("247010", tag.mapper._frames["TLEN"][0].text[0])
+        self.assertEqual("9931892", tag.mapper._frames["TSIZ"][0].text[0])
+        self.assertEqual("foo", tag.mapper._frames["TOFN"][0].text[0])
+        self.assertEqual("Dubstep", tag.mapper._frames["TCON"][0].text[0])
+        self.assertEqual("free", tag.mapper._frames["TCOP"][0].text[0])
+        self.assertEqual("https://foobar.dev/1337",
+                         tag.mapper._frames["WOAS"][0].url)
+        self.assertEqual("https://api.foobar.dev/1337",
+                         tag.mapper._frames["WOAF"][0].url)
+        self.assertEqual("user1", tag.mapper._frames["TPUB"][0].text[0])
+        self.assertEqual("http://user1.dev",
+                         tag.mapper._frames["WOAR"][0].url)
+        #self.assertIn("APIC", tag.mapper._frames)
+
+    def test_load_id3_requires_strack_obj(self):
+        """ Test load_id3 raise exception when strack is invalid object """
+        tag = stag()
+        track = Mock()
+        self.assertRaises(TypeError, tag.load_id3, track)

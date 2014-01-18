@@ -20,6 +20,9 @@ import urllib.request
 from ssyncer.sclient import sclient
 from ssyncer.serror import serror
 
+from stagger.id3 import *
+from stagger.tags import Tag24
+
 
 class strack:
 
@@ -161,3 +164,33 @@ class strack:
                 sys.stdout.write("\n")
         else:
             sys.stdout.write("read %d\n" % read)
+
+
+class stag:
+
+    def __init__(self):
+        self.mapper = Tag24()
+
+    def load_id3(self, track):
+        """ Load id3 tags from strack metadata """
+        if not isinstance(track, strack):
+            raise TypeError('strack object required')
+
+        date = track.get("created-at").split(" ")[0].split("/")
+        time = track.get("created-at").split(" ")[1].split(":")
+
+        self.mapper[TIT1] = TIT1(text=track.get("description"))
+        self.mapper[TIT2] = TIT2(text=track.get("title"))
+        self.mapper[TIT3] = TIT3(text=track.get("tags-list"))
+        self.mapper[TYER] = TYER(text=date[0])
+        self.mapper[TDAT] = TDAT(text=date[2] + date[1])
+        self.mapper[TIME] = TIME(text=time[0] + time[1])
+        self.mapper[TLEN] = TLEN(text=track.get("duration"))
+        self.mapper[TSIZ] = TSIZ(text=track.get("original-content-size"))
+        self.mapper[TOFN] = TOFN(text=track.get("permalink"))
+        self.mapper[TCON] = TCON(text=track.get("genre"))
+        self.mapper[TCOP] = TCOP(text=track.get("license"))
+        self.mapper[WOAS] = WOAS(url=track.get("permalink-url"))
+        self.mapper[WOAF] = WOAF(url=track.get("uri"))
+        self.mapper[TPUB] = TPUB(text=track.get("username"))
+        self.mapper[WOAR] = WOAR(url=track.get("user-url"))
