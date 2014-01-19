@@ -9,5 +9,14 @@ setup(
     url="https://github.com/sliim/soundcloud-syncer",
     license="GPLv3",
     scripts=["sc-syncer", "sc-tagger"],
-    packages=["ssyncer"]
+    packages=["ssyncer"],
+    install_requires=[
+        "stagger"
+    ],
+    tests_require=[
+        "mock",
+        "nose",
+        "pep8",
+        "coverage"
+    ]
 )
