@@ -239,6 +239,7 @@ class TestStag(unittest.TestCase):
         client = Mock()
         track = strack(json_obj[0], client=client)
 
+        tag.artwork = False
         tag.load_id3(track)
 
         self.assertEqual("Some text", tag.mapper._frames["TIT1"][0].text[0])
@@ -257,7 +258,6 @@ class TestStag(unittest.TestCase):
         self.assertEqual("http://user1.dev",
                          tag.mapper._frames["WOAR"][0].url)
         self.assertEqual("User 1", tag.mapper._frames["TOPE"][0].text[0])
-        #self.assertIn("APIC", tag.mapper._frames)
 
     def test_load_id3_requires_strack_obj(self):
         """ Test load_id3 raise exception when strack is invalid object """
@@ -278,6 +278,7 @@ class TestStag(unittest.TestCase):
         tag = stag()
         client = Mock()
         track = strack(json_obj[0], client=client)
+        tag.artwork = False
         tag.load_id3(track)
 
         tag.write_id3(sandbox + filename)

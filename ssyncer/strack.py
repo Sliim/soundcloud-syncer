@@ -18,6 +18,7 @@ import os.path
 import urllib.request
 import time
 import datetime
+import tempfile
 
 from ssyncer.sclient import sclient
 from ssyncer.serror import serror
@@ -170,7 +171,10 @@ class strack:
 
 class stag:
 
+    artwork = True
+
     def __init__(self):
+        self.tmpdir = tempfile.mkdtemp()
         self.mapper = Tag24()
 
     def load_id3(self, track):
@@ -196,6 +200,15 @@ class stag:
         self.mapper[TPUB] = TPUB(text=track.get("username"))
         self.mapper[WOAR] = WOAR(url=track.get("user-url"))
         self.mapper[TOPE] = TOPE(text=track.get("artist"))
+
+        if self.artwork:
+            artwork_file = self.tmpdir + "/sc-artwork.jpg"
+            res = urllib.request.urlopen(track.get("artwork-url"))
+
+            with open(artwork_file, "wb") as file:
+                file.write(res.read())
+
+                self.mapper[APIC] = APIC(value=artwork_file)
 
     def write_id3(self, filename):
         """ Write id3 tags """
