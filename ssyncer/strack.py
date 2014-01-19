@@ -199,7 +199,8 @@ class stag:
         self.mapper[WOAF] = WOAF(url=track.get("uri"))
         self.mapper[TPUB] = TPUB(text=track.get("username"))
         self.mapper[WOAR] = WOAR(url=track.get("user-url"))
-        self.mapper[TOPE] = TOPE(text=track.get("artist"))
+        self.mapper[TPE1] = TPE1(text=track.get("artist"))
+        self.mapper[TALB] = TALB(text="sc-syncer")
 
         if self.artwork:
             artwork_file = self.tmpdir + "/sc-artwork.jpg"
