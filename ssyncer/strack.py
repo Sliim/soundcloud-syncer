@@ -128,7 +128,7 @@ class strack:
 
         return list
 
-    def download(self, localdir):
+    def download(self, localdir, process_tag=True):
         """ Download a track in local directory. """
         local_file = self.gen_localdir(localdir) + self.gen_filename()
 
@@ -158,7 +158,7 @@ class strack:
             os.remove(local_file)
             raise
 
-        if self.get("original-format") == "mp3":
+        if process_tag and self.get("original-format") == "mp3":
             tag = stag()
             tag.load_id3(self)
             tag.write_id3(local_file)
