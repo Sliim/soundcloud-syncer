@@ -21,16 +21,6 @@ from ssyncer.sclient import sclient
 from ssyncer.suser import suser
 from ssyncer.serror import serror
 
-parser = argparse.ArgumentParser(description="Soundcloud Syncer")
-parser.add_argument("-u", "--user", help="Soundcloud user to sync", type=str, required=True)
-parser.add_argument("-c", "--client-id", help="Your client id", type=str)
-parser.add_argument("-o", "--output-dir", help="Output directory", type=str, required=True)
-parser.add_argument("-O", "--offset", help="Tracks offset", type=int)
-parser.add_argument("-L", "--limit", help="Tracks limit (max: 200)", type=int)
-parser.add_argument("-r", "--recursive", help="Recursive download", action="store_true")
-parser.add_argument("-t", "--tracks", help="Download user's tracks instead user's likes", action="store_true")
-
-
 def downloader(tgetter, output, *args):
     """ Download tracks. Return number of tracks downloaded. """
     try:
@@ -47,40 +37,53 @@ def downloader(tgetter, output, *args):
 
     return len(tracks)
 
-args = parser.parse_args()
+def main():
+    parser = argparse.ArgumentParser(description="Soundcloud Syncer")
+    parser.add_argument("-u", "--user", help="Soundcloud user to sync", type=str, required=True)
+    parser.add_argument("-c", "--client-id", help="Your client id", type=str)
+    parser.add_argument("-o", "--output-dir", help="Output directory", type=str, required=True)
+    parser.add_argument("-O", "--offset", help="Tracks offset", type=int)
+    parser.add_argument("-L", "--limit", help="Tracks limit (max: 200)", type=int)
+    parser.add_argument("-r", "--recursive", help="Recursive download", action="store_true")
+    parser.add_argument("-t", "--tracks", help="Download user's tracks instead user's likes", action="store_true")
 
-if not os.path.exists(args.output_dir):
-    print(serror("Error: output directory `%s` doesn's exists." %
-                 args.output_dir))
-    exit(1)
+    args = parser.parse_args()
 
-offset = 0
-limit = 50
-if args.offset:
-    offset = args.offset
-if args.limit:
-    if args.limit > 200:
-        print(serror("Error: tracks limit limited to 200 tracks.."))
-        exit(2)
-    limit = args.limit
+    if not os.path.exists(args.output_dir):
+        print(serror("Error: output directory `%s` doesn's exists." %
+                     args.output_dir))
+        exit(1)
 
-try:
-    sclient = sclient(args.client_id)
-    suser = suser(args.user, client=sclient)
-except serror as e:
-    print(e)
-    exit(3)
+    offset = 0
+    limit = 50
+    if args.offset:
+        offset = args.offset
+    if args.limit:
+        if args.limit > 200:
+            print(serror("Error: tracks limit limited to 200 tracks.."))
+            exit(2)
+        limit = args.limit
 
-tracks_getter = suser.get_likes
-if args.tracks:
-    tracks_getter = suser.get_tracks
+    try:
+        client = sclient(args.client_id)
+        user = suser(args.user, client=client)
+    except serror as e:
+        print(e)
+        exit(3)
 
-if args.recursive:
-    while True:
-        nb = downloader(tracks_getter, args.output_dir, offset, limit)
-        if nb == 0:
-            break
+    tracks_getter = user.get_likes
+    if args.tracks:
+        tracks_getter = user.get_tracks
 
-        offset = offset + limit
-else:
-    downloader(tracks_getter, args.output_dir, offset, limit)
+    if args.recursive:
+        while True:
+            nb = downloader(tracks_getter, args.output_dir, offset, limit)
+            if nb == 0:
+                break
+
+            offset = offset + limit
+    else:
+        downloader(tracks_getter, args.output_dir, offset, limit)
+
+if __name__ == '__main__':
+    main()
