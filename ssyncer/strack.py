@@ -42,7 +42,7 @@ class strack:
             self.client = sclient()
 
         def map(key, data):
-            return data[key] if key in data else ""
+            return str(data[key]) if key in data else ""
 
         self.metadata = {
             "id": map("id", track_data),
