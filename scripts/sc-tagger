@@ -15,6 +15,7 @@
 # Soundcloud-syncer. If not, see <http://www.gnu.org/licenses/gpl-3.0.html>.
 
 import os
+import sys
 import fnmatch
 import argparse
 import json
@@ -49,6 +50,12 @@ def main():
     args = parser.parse_args()
 
     if os.path.isdir(args.target):
+        sys.stdout.write(
+            "Process tag for all mp3 files in %s? [Yn] " % args.target)
+        if (input().lower() != "y"):
+            print("Aborted!")
+            return False
+
         for root, dirnames, filenames in os.walk(args.target):
             for filename in fnmatch.filter(filenames, '*.mp3'):
                 process_tag(filename.split("-")[0],
