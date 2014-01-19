@@ -15,6 +15,7 @@
 
 import sys
 import os
+import shutil
 import unittest
 from mock import Mock
 
@@ -22,15 +23,17 @@ sys.path.insert(0, "../../")
 from ssyncer.strack import strack, stag
 from mock_data import json_obj
 
+import stagger
 from stagger.id3 import *
 
 
 class TestStrack(unittest.TestCase):
 
-    tmpdir = "/tmp/stests"
+    tmpdir = None
 
     def setUp(self):
         """ Create temporary directory for tests. """
+        self.tmpdir = os.path.dirname(os.path.realpath(__file__)) + "/sandbox"
         if not os.path.exists(self.tmpdir):
             os.mkdir(self.tmpdir)
 
@@ -39,14 +42,8 @@ class TestStrack(unittest.TestCase):
         This testsuite create temporary dir/files.
         Delete them after each tests.
         """
-        if os.path.exists("%s/user1/1337-foo.mp3" % self.tmpdir):
-            os.remove("%s/user1/1337-foo.mp3" % self.tmpdir)
-        if os.path.exists("%s/user1" % self.tmpdir):
-            os.rmdir("%s/user1" % self.tmpdir)
-        if os.path.exists("%s/.ignore" % self.tmpdir):
-            os.remove("%s/.ignore" % self.tmpdir)
         if os.path.exists(self.tmpdir):
-            os.rmdir(self.tmpdir)
+            shutil.rmtree(self.tmpdir)
 
     def test_metadata(self):
         """
@@ -61,10 +58,10 @@ class TestStrack(unittest.TestCase):
         self.assertEquals("foo", object.get("permalink"))
         self.assertEquals("user1", object.get("username"))
         self.assertEquals("http://user1.dev", object.get("user-url"))
+        self.assertEquals("User 1", object.get("artist"))
         self.assertTrue(object.get("downloadable"))
         self.assertEquals("mp3", object.get("original-format"))
         self.assertEquals("247010", object.get("duration"))
-        self.assertEquals("9931892", object.get("original-content-size"))
         self.assertEquals("dubstep bass", object.get("tags-list"))
         self.assertEquals("Dubstep", object.get("genre"))
         self.assertEquals("Some text", object.get("description"))
@@ -83,10 +80,10 @@ class TestStrack(unittest.TestCase):
         self.assertEquals("bar", object.get("permalink"))
         self.assertEquals("user2", object.get("username"))
         self.assertEquals("http://user2.dev", object.get("user-url"))
+        self.assertEquals("User 2", object.get("artist"))
         self.assertFalse(object.get("downloadable"))
         self.assertEquals("mp3", object.get("original-format"))
         self.assertEquals("247011", object.get("duration"))
-        self.assertEquals("9931893", object.get("original-content-size"))
         self.assertEquals("trap bass", object.get("tags-list"))
         self.assertEquals("Trap", object.get("genre"))
         self.assertEquals("Some description", object.get("description"))
@@ -105,10 +102,10 @@ class TestStrack(unittest.TestCase):
         self.assertEquals("baz", object.get("permalink"))
         self.assertEquals("user3", object.get("username"))
         self.assertEquals("http://user3.dev", object.get("user-url"))
+        self.assertEquals("User 3", object.get("artist"))
         self.assertTrue(object.get("downloadable"))
         self.assertEquals("wav", object.get("original-format"))
         self.assertEquals("247012", object.get("duration"))
-        self.assertEquals("9931894", object.get("original-content-size"))
         self.assertEquals("drumandbass bass", object.get("tags-list"))
         self.assertEquals("D&B", object.get("genre"))
         self.assertEquals("Awesome D&B", object.get("description"))
@@ -240,7 +237,6 @@ class TestStag(unittest.TestCase):
         """ Test load id3 tags """
         tag = stag()
         client = Mock()
-
         track = strack(json_obj[0], client=client)
 
         tag.load_id3(track)
@@ -248,11 +244,8 @@ class TestStag(unittest.TestCase):
         self.assertEqual("Some text", tag.mapper._frames["TIT1"][0].text[0])
         self.assertEqual("Foo", tag.mapper._frames["TIT2"][0].text[0])
         self.assertEqual("dubstep bass", tag.mapper._frames["TIT3"][0].text[0])
-        self.assertEqual("2013", tag.mapper._frames["TYER"][0].text[0])
-        self.assertEqual("1812", tag.mapper._frames["TDAT"][0].text[0])
-        self.assertEqual("1337", tag.mapper._frames["TIME"][0].text[0])
+        self.assertEqual("1387370220", tag.mapper._frames["TDOR"][0].text[0])
         self.assertEqual("247010", tag.mapper._frames["TLEN"][0].text[0])
-        self.assertEqual("9931892", tag.mapper._frames["TSIZ"][0].text[0])
         self.assertEqual("foo", tag.mapper._frames["TOFN"][0].text[0])
         self.assertEqual("Dubstep", tag.mapper._frames["TCON"][0].text[0])
         self.assertEqual("free", tag.mapper._frames["TCOP"][0].text[0])
@@ -263,6 +256,7 @@ class TestStag(unittest.TestCase):
         self.assertEqual("user1", tag.mapper._frames["TPUB"][0].text[0])
         self.assertEqual("http://user1.dev",
                          tag.mapper._frames["WOAR"][0].url)
+        self.assertEqual("User 1", tag.mapper._frames["TOPE"][0].text[0])
         #self.assertIn("APIC", tag.mapper._frames)
 
     def test_load_id3_requires_strack_obj(self):
@@ -270,3 +264,37 @@ class TestStag(unittest.TestCase):
         tag = stag()
         track = Mock()
         self.assertRaises(TypeError, tag.load_id3, track)
+
+    def test_write_id3(self):
+        """ Test write id3 tags """
+        sandbox = os.path.dirname(os.path.realpath(__file__)) + "/sandbox/"
+        sample = os.path.dirname(os.path.realpath(__file__)) + "/samples/"
+        filename = "92583301-dem-beats-3.mp3"
+
+        if not os.path.exists(sandbox):
+            os.mkdir(sandbox)
+        shutil.copyfile(sample + filename, sandbox + filename)
+
+        tag = stag()
+        client = Mock()
+        track = strack(json_obj[0], client=client)
+        tag.load_id3(track)
+
+        tag.write_id3(sandbox + filename)
+
+        res = stagger.read_tag(sandbox + filename)
+        self.assertEqual("Some text", res[TIT1].text[0])
+        self.assertEqual("Foo", res[TIT2].text[0])
+        self.assertEqual("dubstep bass", res[TIT3].text[0])
+        self.assertEqual("247010", res[TLEN].text[0])
+        self.assertEqual("foo", res[TOFN].text[0])
+        self.assertEqual("Dubstep", res[TCON].text[0])
+        self.assertEqual("free", res[TCOP].text[0])
+        self.assertEqual("1387370220", res[TDOR].text[0])
+        self.assertEqual("https://foobar.dev/1337", res[WOAS].url)
+        self.assertEqual("https://api.foobar.dev/1337", res[WOAF].url)
+        self.assertEqual("user1", res[TPUB].text[0])
+        self.assertEqual("http://user1.dev", res[WOAR][0].url)
+        self.assertEqual("User 1", res[TOPE].text[0])
+
+        shutil.rmtree(sandbox)

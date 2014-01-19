@@ -24,7 +24,8 @@ json_bytes = b'''[{
     "title": "Foo",
     "user": {
         "permalink": "user1",
-        "permalink_url": "http://user1.dev"
+        "permalink_url": "http://user1.dev",
+        "username": "User 1"
     },
     "created_at": "2013/12/18 13:37:00 +0000",
     "duration": "247010",
@@ -45,7 +46,8 @@ json_bytes = b'''[{
     "title": "Bar",
     "user": {
         "permalink": "user2",
-        "permalink_url": "http://user2.dev"
+        "permalink_url": "http://user2.dev",
+        "username": "User 2"
     },
     "created_at": "2013/12/18 13:37:01 +0000",
     "duration": "247011",
@@ -66,7 +68,8 @@ json_bytes = b'''[{
     "title": "Baz",
     "user": {
         "permalink": "user3",
-        "permalink_url": "http://user3.dev"
+        "permalink_url": "http://user3.dev",
+        "username": "User 3"
     },
     "created_at": "2013/12/18 13:37:02 +0000",
     "duration": "247012",

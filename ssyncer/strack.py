@@ -16,6 +16,8 @@
 import sys
 import os.path
 import urllib.request
+import time
+import datetime
 
 from ssyncer.sclient import sclient
 from ssyncer.serror import serror
@@ -43,12 +45,12 @@ class strack:
             "title": track_data["title"],
             "permalink": track_data["permalink"],
             "username": track_data["user"]["permalink"],
+            "artist": track_data["user"]["username"],
             "user-url": track_data["user"]["permalink_url"],
             "downloadable": track_data["downloadable"],
             "original-format": track_data["original_format"],
             "created-at": track_data["created_at"],
             "duration": track_data["duration"],
-            "original-content-size": track_data["original_content_size"],
             "tags-list": track_data["tags_list"],
             "genre": track_data["genre"],
             "description": track_data["description"],
@@ -176,17 +178,16 @@ class stag:
         if not isinstance(track, strack):
             raise TypeError('strack object required')
 
-        date = track.get("created-at").split(" ")[0].split("/")
-        time = track.get("created-at").split(" ")[1].split(":")
+        timestamp = int(time.mktime(
+            datetime.datetime.strptime(
+                track.get("created-at"),
+                "%Y/%m/%d %H:%M:%S +0000").timetuple()))
 
         self.mapper[TIT1] = TIT1(text=track.get("description"))
         self.mapper[TIT2] = TIT2(text=track.get("title"))
         self.mapper[TIT3] = TIT3(text=track.get("tags-list"))
-        self.mapper[TYER] = TYER(text=date[0])
-        self.mapper[TDAT] = TDAT(text=date[2] + date[1])
-        self.mapper[TIME] = TIME(text=time[0] + time[1])
+        self.mapper[TDOR] = TDOR(text=str(timestamp))
         self.mapper[TLEN] = TLEN(text=track.get("duration"))
-        self.mapper[TSIZ] = TSIZ(text=track.get("original-content-size"))
         self.mapper[TOFN] = TOFN(text=track.get("permalink"))
         self.mapper[TCON] = TCON(text=track.get("genre"))
         self.mapper[TCOP] = TCOP(text=track.get("license"))
@@ -194,3 +195,11 @@ class stag:
         self.mapper[WOAF] = WOAF(url=track.get("uri"))
         self.mapper[TPUB] = TPUB(text=track.get("username"))
         self.mapper[WOAR] = WOAR(url=track.get("user-url"))
+        self.mapper[TOPE] = TOPE(text=track.get("artist"))
+
+    def write_id3(self, filename):
+        """ Write id3 tags """
+        if not os.path.exists(filename):
+            raise ValueError("File doesn't exists.")
+
+        self.mapper.write(filename)
