@@ -158,6 +158,11 @@ class strack:
             os.remove(local_file)
             raise
 
+        if self.get("original-format") == "mp3":
+            tag = stag()
+            tag.load_id3(self)
+            tag.write_id3(local_file)
+
     def _progress_hook(self, blocknum, blocksize, totalsize):
         """ Progress hook for urlretrieve. """
         read = blocknum * blocksize
