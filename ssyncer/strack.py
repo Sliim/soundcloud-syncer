@@ -45,13 +45,13 @@ class strack:
             return str(data[key]) if key in data else ""
 
         self.metadata = {
-            "id": map("id", track_data),
+            "id": track_data["id"],
             "title": map("title", track_data),
             "permalink": map("permalink", track_data),
             "username": map("permalink", track_data["user"]),
             "artist": map("username", track_data["user"]),
             "user-url": map("permalink_url", track_data["user"]),
-            "downloadable": map("downloadable", track_data),
+            "downloadable": track_data["downloadable"],
             "original-format": map("original_format", track_data),
             "created-at": map("created_at", track_data),
             "duration": map("duration", track_data),
@@ -174,9 +174,6 @@ class strack:
 
 
 class stag:
-
-    artwork = True
-
     def __init__(self):
         self.tmpdir = tempfile.mkdtemp()
         self.mapper = Tag24()
@@ -206,13 +203,11 @@ class stag:
         self.mapper[TPE1] = TPE1(text=track.get("artist"))
         self.mapper[TALB] = TALB(text="sc-syncer")
 
-        if self.artwork:
-            artwork_file = self.tmpdir + "/sc-artwork.jpg"
-            res = urllib.request.urlopen(track.get("artwork-url"))
+        if track.get("artwork-url") != "None":
+            artwork_file = self._process_artwork_tmpfile(
+                track.get("artwork-url"))
 
-            with open(artwork_file, "wb") as file:
-                file.write(res.read())
-
+            if artwork_file:
                 self.mapper[APIC] = APIC(value=artwork_file)
 
     def write_id3(self, filename):
@@ -221,3 +216,16 @@ class stag:
             raise ValueError("File doesn't exists.")
 
         self.mapper.write(filename)
+
+    def _process_artwork_tmpfile(self, artwork_url):
+        """
+        Fetch artwork_url and save picture in tmpfile.
+        This function return temporary file path where
+        is saved artwork image """
+        artwork_file = self.tmpdir + "/sc-artwork.jpg"
+        res = urllib.request.urlopen(artwork_url)
+
+        with open(artwork_file, "wb") as file:
+            file.write(res.read())
+
+        return artwork_file

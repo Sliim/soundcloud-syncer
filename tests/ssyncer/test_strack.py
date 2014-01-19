@@ -236,10 +236,10 @@ class TestStag(unittest.TestCase):
     def test_load_id3(self):
         """ Test load id3 tags """
         tag = stag()
+        tag._process_artwork_tmpfile = Mock(return_value=False)
         client = Mock()
         track = strack(json_obj[0], client=client)
 
-        tag.artwork = False
         tag.load_id3(track)
 
         self.assertEqual("Some text", tag.mapper._frames["TIT1"][0].text[0])
@@ -277,9 +277,9 @@ class TestStag(unittest.TestCase):
         shutil.copyfile(sample + filename, sandbox + filename)
 
         tag = stag()
+        tag._process_artwork_tmpfile = Mock(return_value=False)
         client = Mock()
         track = strack(json_obj[0], client=client)
-        tag.artwork = False
         tag.load_id3(track)
 
         tag.write_id3(sandbox + filename)
