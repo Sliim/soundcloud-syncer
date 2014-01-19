@@ -8,7 +8,7 @@ setup(
     author_email="sliim@mailoo.org",
     url="https://github.com/sliim/soundcloud-syncer",
     license="GPLv3",
-    scripts=["sc-syncer", "sc-tagger"],
+    scripts=["scripts/sc-syncer", "scripts/sc-tagger"],
     packages=["ssyncer"],
     install_requires=[
         "stagger"
