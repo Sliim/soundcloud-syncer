@@ -41,24 +41,28 @@ class strack:
         else:
             self.client = sclient()
 
+        def map(key, data):
+            return data[key] if key in data else ""
+
         self.metadata = {
-            "id": track_data["id"],
-            "title": track_data["title"],
-            "permalink": track_data["permalink"],
-            "username": track_data["user"]["permalink"],
-            "artist": track_data["user"]["username"],
-            "user-url": track_data["user"]["permalink_url"],
-            "downloadable": track_data["downloadable"],
-            "original-format": track_data["original_format"],
-            "created-at": track_data["created_at"],
-            "duration": track_data["duration"],
-            "tags-list": track_data["tags_list"],
-            "genre": track_data["genre"],
-            "description": track_data["description"],
-            "license": track_data["license"],
-            "uri": track_data["uri"],
-            "permalink-url": track_data["permalink_url"],
-            "artwork-url": track_data["artwork_url"] .replace("large", "crop"),
+            "id": map("id", track_data),
+            "title": map("title", track_data),
+            "permalink": map("permalink", track_data),
+            "username": map("permalink", track_data["user"]),
+            "artist": map("username", track_data["user"]),
+            "user-url": map("permalink_url", track_data["user"]),
+            "downloadable": map("downloadable", track_data),
+            "original-format": map("original_format", track_data),
+            "created-at": map("created_at", track_data),
+            "duration": map("duration", track_data),
+            "tags-list": map("tags_list", track_data),
+            "genre": map("genre", track_data),
+            "description": map("description", track_data),
+            "license": map("license", track_data),
+            "uri": map("uri", track_data),
+            "permalink-url": map("permalink_url", track_data),
+            "artwork-url": map("artwork_url",
+                               track_data).replace("large", "crop"),
         }
 
     def get(self, key):
