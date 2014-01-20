@@ -56,10 +56,19 @@ def main():
             print("Aborted!")
             return False
 
+        errored = 0
+        success = 0
         for root, dirnames, filenames in os.walk(args.target):
             for filename in fnmatch.filter(filenames, '*.mp3'):
-                process_tag(filename.split("-")[0],
+                result = process_tag(filename.split("-")[0],
                             os.path.join(root, filename))
+
+                if result == False:
+                    errored += 1
+                else:
+                    success += 1
+
+        print("Done. %s processed, %s in error." % (success, errored))
 
     elif os.path.isfile(args.target) and args.target[-3:] == "mp3":
         process_tag(os.path.basename(args.target).split("-")[0],
