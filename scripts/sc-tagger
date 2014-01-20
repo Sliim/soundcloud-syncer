@@ -15,6 +15,7 @@
 # Soundcloud-syncer. If not, see <http://www.gnu.org/licenses/gpl-3.0.html>.
 
 import os
+import re
 import sys
 import fnmatch
 import argparse
@@ -43,6 +44,20 @@ def process_tag(track_id, filepath):
     tag.load_id3(track)
     tag.write_id3(filepath)
 
+def is_valid(filename):
+    """ Check if filename matches {id}-{permalink}.mp3 format """
+    if re.match("^[0-9]+-[0-9a-z\-]+\.mp3$", filename):
+        return True
+    return False
+
+def retrieve_id_from(filename):
+    """ Retrieve track ID from filename """
+    if is_valid(filename) == False:
+        print(serror("Invalid filename `%s` - Tagging skipped" % filename))
+        return False
+
+    return filename.split("-")[0]
+
 def main():
     parser = argparse.ArgumentParser(description="Soundcloud Tagger")
     parser.add_argument("target", type=str, help="File or directory where you want tag audio file.")
@@ -60,6 +75,11 @@ def main():
         success = 0
         for root, dirnames, filenames in os.walk(args.target):
             for filename in fnmatch.filter(filenames, '*.mp3'):
+                id = retrieve_id_from(filename)
+                if id == False:
+                    errored += 1
+                    continue
+
                 result = process_tag(filename.split("-")[0],
                             os.path.join(root, filename))
 
@@ -71,8 +91,9 @@ def main():
         print("Done. %s processed, %s in error." % (success, errored))
 
     elif os.path.isfile(args.target) and args.target[-3:] == "mp3":
-        process_tag(os.path.basename(args.target).split("-")[0],
-                    args.target)
+        id = retrieve_id_from(os.path.basename(args.target))
+        if id:
+            process_tag(id, args.target)
 
 if __name__ == '__main__':
     main()
