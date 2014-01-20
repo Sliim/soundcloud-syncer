@@ -1,32 +1,29 @@
-* Soundcloud Syncer
-[[http://travis-ci.org/Sliim/soundcloud-syncer][http://secure.travis-ci.org/Sliim/soundcloud-syncer.png?branch=master]]
+* Soundcloud Syncer | [[http://travis-ci.org/Sliim/soundcloud-syncer][http://secure.travis-ci.org/Sliim/soundcloud-syncer.png?branch=master]]
 
 Soundcloud-syncer is a tool to synchronize soundcloud user's favorites and tracks locally.
 
 ** Requirements
 *** Python version
-1. Python 3.x
-*** Run unittests
-To run unitests you will need following packages:
+- Python 3.x
+*** Packages dependencies
+- stagger (for id3 tag support)
+
+To run tests you need some packages:
 - mock
-
-Optionnaly you can install these packages:
 - nose
-- coverage
-
-#+BEGIN_SRC shell
-pip-3.2 install mock nose coverage
-#+END_SRC
+- coverage (optional)
 ** Installation
-*** From Pypi
+The recommended way to install soundcloud-syncer is from Pypi.
+*** Pypi
 #+BEGIN_SRC shell
-pip3 install soundcloud-syncer
+pip install soundcloud-syncer
+sc-syncer --help
 #+END_SRC
-*** From Github
+*** Github
 #+BEGIN_SRC shell
-git clone git@github.com/Sliim/soundcloud-syncer.git
+git clone https://github.com/Sliim/soundcloud-syncer.git
 cd soundcloud-syncer
-./sc-syncer --help
+scripts/sc-syncer --help
 #+END_SRC
 ** Basic usage
 - Download user's likes:
@@ -48,7 +45,7 @@ sc-syncer -u USER_TO_SYNC -o OUTPUT_DIRECTORY -t -r
 #+BEGIN_SRC shell
 sc-syncer -u USER_TO_SYNC -o OUTPUT_DIRECTORY -L LIMIT -O OFFSET
 #+END_SRC
-/!\ Limit can't be greater than 200.
+*/!\ Limit can't be greater than 200.*
 
 ** Ignoring tracks
 You can ignore some tracks you don't want to sync locally.
@@ -61,13 +58,36 @@ To ignore https://soundcloud.com/trapmusic/vexed-goodbye-by-j-nitrous add in ~.i
 #+BEGIN_SRC txt
 trapmusic/vexed-goodbye-by-j-nitrous
 #+END_SRC
+** Tag support
+soundcloud-syncer support id3 tag from version 0.2.
+
+It writes ID3 tag after each downloaded mp3 file. You can disable this feature with ~--without-tag~ option:
+#+BEGIN_SRC shell
+sc-syncer -u USER_TO_SYNC -o OUTPUT_DIRECTORY --without-tag
+#+END_SRC
+
+You can re-write mp3 tag with ~sc-tagger~ tool. This tool expect a file or directory as first argument.
+
+File's name format must be "{id}-{permalink}.mp3" to be tagged. Track ID is necessary to retrieve data from soundcloud's API.
+
+- for a file, it will write id3 tag if it's a mp3 file.
+#+BEGIN_SRC shell
+sc-tagger /path/to/file.mp3
+#+END_SRC
+- for a directory, ~sc-tagger~ find all mp3 file and tags them.
+#+BEGIN_SRC shell
+sc-tagger /path/to/directory/
+#+END_SRC
+
+It may be useful to update tracks downloaded with soundcloud-syncer 0.1!
+
 ** Features
 - Download user's favorites / likes tracks list.
 - Download user's tracks list.
 - Possibility to set offset and limit for tracks list.
 - Auto find client_id when not passed to sync script.
-- Check if track exists locally before download it.
 - Possibility to ignore some tracks to sync.
 - Recursive download.
+- ID3 Tag support.
 ** License
    See COPYING file
