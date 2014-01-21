@@ -62,7 +62,8 @@ def main():
     parser = argparse.ArgumentParser(description="Soundcloud Tagger")
     parser.add_argument("target",
                         type=str,
-                        help="File or directory where you want tag audio file.")
+                        help=""" File or directory where you want tag audio file.
+                        Filename format must be the same as generated from sc-syncer tool: {id}-{permalink}.mp3""")
     parser.add_argument("-i",
                         "--id",
                         help="Specify track ID (only for a sinle file)",
