@@ -206,7 +206,8 @@ class stag:
         self.mapper[TPUB] = TPUB(text=track.get("username"))
         self.mapper[WOAR] = WOAR(url=track.get("user-url"))
         self.mapper[TPE1] = TPE1(text=track.get("artist"))
-        self.mapper[TALB] = TALB(text="sc-syncer")
+        self.mapper[TALB] = TALB(text="%s Soundcloud tracks"
+                                 % track.get("artist"))
 
         if track.get("artwork-url") != "None":
             artwork_file = self._process_artwork_tmpfile(

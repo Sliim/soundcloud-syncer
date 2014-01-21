@@ -258,7 +258,8 @@ class TestStag(unittest.TestCase):
         self.assertEqual("http://user1.dev",
                          tag.mapper._frames["WOAR"][0].url)
         self.assertEqual("User 1", tag.mapper._frames["TPE1"][0].text[0])
-        self.assertEqual("sc-syncer", tag.mapper._frames["TALB"][0].text[0])
+        self.assertEqual("User 1 Soundcloud tracks",
+                         tag.mapper._frames["TALB"][0].text[0])
 
     def test_load_id3_requires_strack_obj(self):
         """ Test load_id3 raise exception when strack is invalid object """
@@ -298,6 +299,6 @@ class TestStag(unittest.TestCase):
         self.assertEqual("user1", res[TPUB].text[0])
         self.assertEqual("http://user1.dev", res[WOAR][0].url)
         self.assertEqual("User 1", res[TPE1].text[0])
-        self.assertEqual("sc-syncer", res[TALB].text[0])
+        self.assertEqual("User 1 Soundcloud tracks", res[TALB].text[0])
 
         shutil.rmtree(sandbox)
