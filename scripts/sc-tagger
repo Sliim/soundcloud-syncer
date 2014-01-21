@@ -60,11 +60,21 @@ def retrieve_id_from(filename):
 
 def main():
     parser = argparse.ArgumentParser(description="Soundcloud Tagger")
-    parser.add_argument("target", type=str, help="File or directory where you want tag audio file.")
+    parser.add_argument("target",
+                        type=str,
+                        help="File or directory where you want tag audio file.")
+    parser.add_argument("-i",
+                        "--id",
+                        help="Specify track ID (only for a sinle file)",
+                        type=int)
 
     args = parser.parse_args()
 
     if os.path.isdir(args.target):
+        if (args.id):
+            print(serror("id option can't be used for an entire directory."))
+            return False
+
         sys.stdout.write(
             "Process tag for all mp3 files in %s? [Yn] " % args.target)
         if (input().lower() != "y"):
@@ -91,7 +101,7 @@ def main():
         print("Done. %s processed, %s in error." % (success, errored))
 
     elif os.path.isfile(args.target) and args.target[-3:] == "mp3":
-        id = retrieve_id_from(os.path.basename(args.target))
+        id = args.id if args.id else retrieve_id_from(os.path.basename(args.target))
         if id:
             process_tag(id, args.target)
 

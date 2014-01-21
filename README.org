@@ -72,9 +72,13 @@ File's name format must be "{id}-{permalink}.mp3" to be tagged. Track ID is nece
 
 - for a file, it will write id3 tag if it's a mp3 file.
 #+BEGIN_SRC shell
-sc-tagger /path/to/file.mp3
+sc-tagger /path/to/1337-file.mp3
 #+END_SRC
-- for a directory, ~sc-tagger~ find all mp3 file and tags them.
+You can specify track ID for a single file:
+#+BEGIN_SRC shell
+sc-tagger /path/to/file.mp3 --id 1337
+#+END_SRC
+- for a directory, ~sc-tagger~ find all mp3 file and tags them (--id option is not supported).
 #+BEGIN_SRC shell
 sc-tagger /path/to/directory/
 #+END_SRC
