@@ -188,10 +188,11 @@ class stag:
         if not isinstance(track, strack):
             raise TypeError('strack object required')
 
+
         timestamp = int(time.mktime(
             datetime.datetime.strptime(
                 track.get("created-at"),
-                "%Y/%m/%d %H:%M:%S +0000").timetuple()))
+                "%Y/%m/%d %H:%M:%S %z").timetuple()))
 
         self.mapper[TIT1] = TIT1(text=track.get("description"))
         self.mapper[TIT2] = TIT2(text=track.get("title"))
