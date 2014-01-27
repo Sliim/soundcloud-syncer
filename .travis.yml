@@ -3,4 +3,4 @@ python:
   - "3.2"
   - "3.3"
 script: nosetests -w tests/ssyncer
-install: pip install --upgrade pip && pip install .
+install: pip install --upgrade pip setuptools && pip install .
