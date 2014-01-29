@@ -3,4 +3,8 @@ python:
   - "3.2"
   - "3.3"
 script: nosetests -w tests/ssyncer
-install: pip install --upgrade pip setuptools && pip install .
+before_install:
+  svn checkout http://stagger.googlecode.com/svn/trunk/ stagger &&
+  patch stagger/setup.py stagger-setup.patch &&
+  pip install stagger/
+install: pip install .

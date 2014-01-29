@@ -1,0 +1,24 @@
+8c8
+< # 
+---
+> #
+12c12
+< # 
+---
+> #
+15c15
+< # 
+---
+> #
+20c20
+< # 
+---
+> #
+33,35c33
+<   
+< import distribute_setup
+< distribute_setup.use_setuptools()
+---
+> from setuptools import setup
+37d34
+< from setuptools import setup;
