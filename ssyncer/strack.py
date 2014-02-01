@@ -16,9 +16,9 @@
 import sys
 import os.path
 import urllib.request
-import time
 import calendar
 import tempfile
+from dateutil.parser import parse
 
 from ssyncer.sclient import sclient
 from ssyncer.serror import serror
@@ -188,9 +188,7 @@ class stag:
         if not isinstance(track, strack):
             raise TypeError('strack object required')
 
-        timestamp = calendar.timegm(time.strptime(
-            track.get("created-at"),
-            "%Y/%m/%d %H:%M:%S %z"))
+        timestamp = calendar.timegm(parse(track.get("created-at")).timetuple())
 
         self.mapper[TIT1] = TIT1(text=track.get("description"))
         self.mapper[TIT2] = TIT2(text=track.get("title"))

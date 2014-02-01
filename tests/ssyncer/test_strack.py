@@ -261,6 +261,23 @@ class TestStag(unittest.TestCase):
         self.assertEqual("User 1 Soundcloud tracks",
                          tag.mapper._frames["TALB"][0].text[0])
 
+    def test_load_id3_with_different_date_format(self):
+        """
+        Test load id3 tags with different date format
+        Returned date from soundcloud depends of timezone.
+        """
+        tag = stag()
+        tag._process_artwork_tmpfile = Mock(return_value=False)
+        client = Mock()
+
+        from copy import copy
+        json_track = copy(json_obj[0])
+        json_track["created_at"] = "2013-12-18T13:37:00Z"
+        track = strack(json_track, client=client)
+
+        tag.load_id3(track)
+        self.assertEqual("1387373820", tag.mapper._frames["TDOR"][0].text[0])
+
     def test_load_id3_requires_strack_obj(self):
         """ Test load_id3 raise exception when strack is invalid object """
         tag = stag()

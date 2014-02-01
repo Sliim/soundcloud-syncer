@@ -11,7 +11,8 @@ setup(
     scripts=["scripts/sc-syncer", "scripts/sc-tagger"],
     packages=["ssyncer"],
     install_requires=[
-        "stagger"
+        "stagger",
+        "python-dateutil"
     ],
     tests_require=[
         "mock",
