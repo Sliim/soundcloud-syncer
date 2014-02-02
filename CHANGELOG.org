@@ -9,3 +9,6 @@
 - Some fixes and readme improvements
 - ID3 tag support for mp3 files
 
+** 0.2.1:
+
+- Provides retry when reaquest has failed
