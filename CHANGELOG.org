@@ -1,0 +1,11 @@
+* CHANGELOG for soundcloud-syncer
+
+** 0.1:
+- First ~soundcloud-syncer~ release
+
+** 0.2:
+
+- Moved scripts in ~scripts/~ directory.
+- Some fixes and readme improvements
+- ID3 tag support for mp3 files
+
