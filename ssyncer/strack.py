@@ -97,6 +97,12 @@ class strack:
             self.get("permalink"),
             self.get("original-format"))
 
+    def gen_artwork_filename(self):
+        """ Generate artwork filename for cover of this track. """
+        return "{0}-{1}.jpg".format(
+            self.get("id"),
+            self.get("permalink"))
+
     def gen_localdir(self, localdir):
         """
         Generate local directory where track will be saved.
@@ -158,10 +164,34 @@ class strack:
             os.remove(local_file)
             raise
 
+        self._download_artwork(localdir)
+
         if process_tag and self.get("original-format") == "mp3":
             tag = stag()
             tag.load_id3(self)
             tag.write_id3(local_file)
+
+    def _download_artwork(self, localdir):
+        """
+        Download track's artwork and return file path.
+        Artwork's path is saved in track's metadata as 'artwork-path' key.
+        """
+        if self.get("artwork-url") == "None":
+            self.metadata["artwork-path"] = None
+            return None
+
+        artwork_dir = localdir + "/artworks"
+        if not os.path.isdir(artwork_dir):
+            if os.path.isfile(artwork_dir):
+                os.path.remove(artwork_dir)
+            os.mkdir(artwork_dir)
+
+        artwork_filepath = artwork_dir + "/" + self.gen_artwork_filename()
+        res = urllib.request.urlopen(self.get("artwork-url"))
+        with open(artwork_filepath, "wb") as file:
+            file.write(res.read())
+
+        self.metadata["artwork-path"] = artwork_filepath
 
     def _progress_hook(self, blocknum, blocksize, totalsize):
         """ Progress hook for urlretrieve. """
@@ -206,12 +236,8 @@ class stag:
         self.mapper[TALB] = TALB(text="%s Soundcloud tracks"
                                  % track.get("artist"))
 
-        if track.get("artwork-url") != "None":
-            artwork_file = self._process_artwork_tmpfile(
-                track.get("artwork-url"))
-
-            if artwork_file:
-                self.mapper[APIC] = APIC(value=artwork_file)
+        if track.get("artwork-path") is not None:
+            self.mapper[APIC] = APIC(value=track.get("artwork-path"))
 
     def write_id3(self, filename):
         """ Write id3 tags """
@@ -219,16 +245,3 @@ class stag:
             raise ValueError("File doesn't exists.")
 
         self.mapper.write(filename)
-
-    def _process_artwork_tmpfile(self, artwork_url):
-        """
-        Fetch artwork_url and save picture in tmpfile.
-        This function return temporary file path where
-        is saved artwork image """
-        artwork_file = self.tmpdir + "/sc-artwork.jpg"
-        res = urllib.request.urlopen(artwork_url)
-
-        with open(artwork_file, "wb") as file:
-            file.write(res.read())
-
-        return artwork_file
