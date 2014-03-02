@@ -3,7 +3,7 @@ from distutils.core import setup
 setup(
     name="soundcloud-syncer",
     version="0.2.2",
-    description="Synchronize user's favorites tracks from soundcloud'",
+    description="Synchronize user's favorites tracks from soundcloud",
     author="Sliim",
     author_email="sliim@mailoo.org",
     url="https://github.com/sliim/soundcloud-syncer",
