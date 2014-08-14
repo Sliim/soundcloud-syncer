@@ -18,6 +18,8 @@ import os.path
 import urllib.request
 import calendar
 import tempfile
+import glob
+import magic
 from dateutil.parser import parse
 
 from ssyncer.sclient import sclient
@@ -92,10 +94,23 @@ class strack:
 
     def gen_filename(self):
         """ Generate local filename for this track. """
-        return "{0}-{1}.{2}".format(
+        return "{0}-{1}".format(
             self.get("id"),
-            self.get("permalink"),
-            self.get("original-format"))
+            self.get("permalink"))
+
+    def get_file_extension(self, filepath):
+        """
+        This method check mimetype to define file extension.
+        If it can't, it use original-format metadata.
+        """
+        mtype = magic.from_file(filepath, mime=True)
+        if mtype == b"audio/mpeg":
+            ext = ".mp3"
+        elif mtype == b"audio/x-wav":
+            ext = ".wav"
+        else:
+            ext = "." + self.get("original-format")
+        return ext
 
     def gen_artwork_filename(self):
         """ Generate artwork filename for cover of this track. """
@@ -115,8 +130,10 @@ class strack:
 
     def track_exists(self, localdir):
         """ Check if track exists in local directory. """
-        path = self.gen_localdir(localdir) + self.gen_filename()
-        if os.path.exists(path) and os.path.getsize(path) > 0:
+        path = glob.glob(self.gen_localdir(localdir)
+                         + self.gen_filename()
+                         + "*")
+        if len(path) > 0 and os.path.getsize(path[0]) > 0:
             return True
         return False
 
@@ -164,12 +181,16 @@ class strack:
             os.remove(local_file)
             raise
 
+        local_file_with_ext = local_file + self.get_file_extension(local_file)
+        os.rename(local_file, local_file_with_ext)
+        print("Downloaded => %s\n" % local_file_with_ext)
+
         self._download_artwork(localdir)
 
-        if process_tag and self.get("original-format") == "mp3":
+        if process_tag and local_file_with_ext[-3:] == "mp3":
             tag = stag()
             tag.load_id3(self)
-            tag.write_id3(local_file)
+            tag.write_id3(local_file_with_ext)
 
     def _download_artwork(self, localdir):
         """

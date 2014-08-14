@@ -18,6 +18,7 @@ import os
 import shutil
 import unittest
 from mock import Mock
+from mock import patch
 
 sys.path.insert(0, "../../")
 from ssyncer.strack import strack, stag
@@ -167,11 +168,11 @@ class TestStrack(unittest.TestCase):
     def test_gen_filename(self):
         """
         Test generated local filename look like this:
-        {id}-{permalink}.{ext}.
+        {id}-{permalink}.
         """
         client = Mock()
         object = strack(json_obj[2], client=client)
-        self.assertEquals("1339-baz.wav", object.gen_filename())
+        self.assertEquals("1339-baz", object.gen_filename())
 
     def test_gen_localdir(self):
         """
@@ -223,6 +224,45 @@ class TestStrack(unittest.TestCase):
         object = strack(json_obj[0], client=client)
         ignored = object.get_ignored_tracks(self.tmpdir)
         self.assertEquals(0, len(ignored))
+
+    def test_get_file_extension_from_mimetype_mp3(self):
+        """
+        Test get_file_extension method that return
+        extension depending of mimetype.
+        """
+        client = Mock()
+        object = strack(json_obj[2], client=client)
+        with patch("ssyncer.strack.magic.from_file",
+                   return_value=b"audio/mpeg"):
+            self.assertEquals(".mp3",
+                              object.get_file_extension(
+                                  "user3/1339-baz"))
+
+    def test_get_file_extension_from_mimetype_wave(self):
+        """
+        Test get_file_extension method that return
+        extension depending of mimetype.
+        """
+        client = Mock()
+        object = strack(json_obj[2], client=client)
+        with patch("ssyncer.strack.magic.from_file",
+                   return_value=b"audio/x-wav"):
+            self.assertEquals(".wav",
+                              object.get_file_extension(
+                                  "user3/1339-baz"))
+
+    def test_get_file_extension_from_metadata(self):
+        """
+        Test get_file_extension method that return
+        extension depending of metadata.
+        """
+        client = Mock()
+        object = strack(json_obj[2], client=client)
+        with patch("ssyncer.strack.magic.from_file",
+                   return_value=b"audio/unknown"):
+            self.assertEquals(".wav",
+                              object.get_file_extension(
+                                  "user3/1339-baz"))
 
 
 class TestStag(unittest.TestCase):

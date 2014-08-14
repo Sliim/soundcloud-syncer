@@ -12,6 +12,7 @@ setup(
     packages=["ssyncer"],
     install_requires=[
         "stagger",
-        "python-dateutil"
+        "python-dateutil",
+        "python-magic"
     ]
 )
