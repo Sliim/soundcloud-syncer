@@ -10,4 +10,4 @@ before_install:
   svn checkout http://stagger.googlecode.com/svn/trunk/ stagger &&
   patch stagger/setup.py stagger-setup.patch &&
   pip install stagger/
-install: pip install -r tests-requirements.txt
+install: pip install -r tests-requirements.txt && pip install .
