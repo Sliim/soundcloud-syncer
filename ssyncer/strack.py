@@ -185,14 +185,14 @@ class strack:
         os.rename(local_file, local_file_with_ext)
         print("Downloaded => %s\n" % local_file_with_ext)
 
-        self._download_artwork(localdir)
+        self.download_artwork(localdir)
 
         if process_tag and local_file_with_ext[-3:] == "mp3":
             tag = stag()
             tag.load_id3(self)
             tag.write_id3(local_file_with_ext)
 
-    def _download_artwork(self, localdir):
+    def download_artwork(self, localdir):
         """
         Download track's artwork and return file path.
         Artwork's path is saved in track's metadata as 'artwork-path' key.
