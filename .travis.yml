@@ -1,10 +1,13 @@
 language: python
-python:
-  - "3.2"
-  - "3.3"
-script: nosetests -w tests/ssyncer
+python: 3.3
+env:
+- TOX_ENV=py32
+- TOX_ENV=py33
+- TOX_ENV=py34
+- TOX_ENV=pypy
+script: tox -e $TOX_ENV
 before_install:
   svn checkout http://stagger.googlecode.com/svn/trunk/ stagger &&
   patch stagger/setup.py stagger-setup.patch &&
   pip install stagger/
-install: pip install .
+install: pip install -r tests-requirements.txt

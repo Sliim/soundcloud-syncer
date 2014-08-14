@@ -9,9 +9,11 @@ Soundcloud-syncer is a tool to synchronize soundcloud user's favorites and track
 - stagger (for id3 tag support)
 
 To run tests you need some packages:
-- mock
-- nose
-- coverage (optional)
++ tox
++ mock
++ nose
++ pep8
++ coverage (optional)
 ** Installation
 The recommended way to install soundcloud-syncer is from Pypi.
 *** Pypi

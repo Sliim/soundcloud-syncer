@@ -13,11 +13,5 @@ setup(
     install_requires=[
         "stagger",
         "python-dateutil"
-    ],
-    tests_require=[
-        "mock",
-        "nose",
-        "pep8",
-        "coverage"
     ]
 )
