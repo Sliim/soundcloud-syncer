@@ -1,5 +1,9 @@
 * CHANGELOG for soundcloud-syncer
 
+** 0.2.3:
+- Use tox for souncloud-syncer testing
+- Fixed file extension
+
 ** 0.2.2:
 
 - Save artwork files in artworks/ subdirectory
