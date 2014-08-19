@@ -33,6 +33,8 @@ class strack:
 
     client = None
     metadata = {}
+    downloaded = False
+    filename = None
 
     def __init__(self, track_data, **kwargs):
         """ Track object initialization, load track metadata. """
@@ -151,7 +153,7 @@ class strack:
 
         return list
 
-    def download(self, localdir, process_tag=True):
+    def download(self, localdir):
         """ Download a track in local directory. """
         local_file = self.gen_localdir(localdir) + self.gen_filename()
 
@@ -181,16 +183,36 @@ class strack:
             os.remove(local_file)
             raise
 
-        local_file_with_ext = local_file + self.get_file_extension(local_file)
-        os.rename(local_file, local_file_with_ext)
-        print("Downloaded => %s\n" % local_file_with_ext)
+        self.filename = local_file + self.get_file_extension(local_file)
+        os.rename(local_file, self.filename)
+        print("Downloaded => %s\n" % self.filename)
 
-        self.download_artwork(localdir)
+        self.downloaded = True
+        return True
 
-        if process_tag and local_file_with_ext[-3:] == "mp3":
+    def process_tags(self, tag=None):
+        """Process ID3 Tags for mp3 files."""
+        if self.downloaded is False:
+            raise serror("Track not downloaded, can't process tags..")
+        if magic.from_file(self.filename, mime=True) != b"audio/mpeg":
+            return False
+
+        print("Processing tags for %s", self.filename)
+        if tag is None:
             tag = stag()
-            tag.load_id3(self)
-            tag.write_id3(local_file_with_ext)
+        tag.load_id3(self)
+        tag.write_id3(self.filename)
+
+    def convert(self):
+        """Convert file in mp3 format."""
+        if self.downloaded is False:
+            raise serror("Track not downloaded, can't process tags..")
+        if magic.from_file(self.filename, mime=True) == b"audio/mpeg":
+            return False
+
+        print("Converting %s" % self.filename)
+        # TODO: Convert file
+        return True
 
     def download_artwork(self, localdir):
         """

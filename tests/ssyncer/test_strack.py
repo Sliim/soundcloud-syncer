@@ -22,6 +22,7 @@ from mock import patch
 
 sys.path.insert(0, "../../")
 from ssyncer.strack import strack, stag
+from ssyncer.serror import serror
 from mock_data import json_obj
 
 import stagger
@@ -263,6 +264,75 @@ class TestStrack(unittest.TestCase):
             self.assertEquals(".wav",
                               object.get_file_extension(
                                   "user3/1339-baz"))
+
+    def test_process_tags(self):
+        """Test process_tags method."""
+        client = Mock()
+        tag = Mock()
+        object = strack(json_obj[0], client=client)
+        object.downloaded = True
+        object.filename = "user1/1337-bar.mp3"
+
+        with patch("ssyncer.strack.magic.from_file",
+                   return_value=b"audio/mpeg"):
+            object.process_tags(tag=tag)
+
+        tag.load_id3.assert_called_once_with(object)
+        tag.write_id3.assert_called_once_with("user1/1337-bar.mp3")
+
+    def test_process_tags_return_false_if_not_mpeg(self):
+        """
+        Test that process_tags() method return False if
+        file is not in mpeg format.
+        """
+        client = Mock()
+        object = strack(json_obj[2], client=client)
+        object.downloaded = True
+        object.filename = "user3/1339-bar.wav"
+
+        with patch("ssyncer.strack.magic.from_file",
+                   return_value=b"audio/x-wav"):
+            self.assertFalse(object.process_tags())
+
+    def test_process_tags_raises_error_when_track_not_downloaded(self):
+        """
+        Test process_tags method raises error when track is not downloaded.
+        """
+        client = Mock()
+        object = strack(json_obj[0], client=client)
+        object.downloaded = False
+        self.assertRaises(serror, object.process_tags)
+
+    def test_convert(self):
+        """Test convert method."""
+        client = Mock()
+        object = strack(json_obj[2], client=client)
+        object.downloaded = True
+        object.filename = "user3/1339-bar.wav"
+
+        with patch("ssyncer.strack.magic.from_file",
+                   return_value=b"audio/x-wav"):
+            object.convert()
+
+    def test_convert_return_false_when_file_already_mpeg_format(self):
+        """
+        Test convert method return False if file is
+        already in mpeg format.
+        """
+        client = Mock()
+        object = strack(json_obj[0], client=client)
+        object.downloaded = True
+        object.filename = "user1/1337-bar.mp3"
+        with patch("ssyncer.strack.magic.from_file",
+                   return_value=b"audio/mpeg"):
+            self.assertFalse(object.convert())
+
+    def test_convert_raises_error_when_track_not_downloaded(self):
+        """Test convert method raises error when track is not downloaded."""
+        client = Mock()
+        object = strack(json_obj[0], client=client)
+        object.downloaded = False
+        self.assertRaises(serror, object.convert)
 
 
 class TestStag(unittest.TestCase):
