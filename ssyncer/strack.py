@@ -161,12 +161,12 @@ class strack:
         local_file = self.gen_localdir(localdir) + self.gen_filename()
 
         if self.track_exists(localdir):
-            print("INFO: Track {0} already downloaded, skipping!".format(
+            print("Track {0} already downloaded, skipping!".format(
                 self.get("id")))
             return False
 
         if local_file in self.get_ignored_tracks(localdir):
-            print("\033[93mINFO: Track {0} ignored, skipping!!\033[0m".format(
+            print("\033[93mTrack {0} ignored, skipping!!\033[0m".format(
                 self.get("id")))
             return False
 
@@ -178,7 +178,7 @@ class strack:
                 self.get("title")))
 
         try:
-            print("Start downloading %s (%d).." % (
+            print("\nDownloading %s (%d).." % (
                 self.get("title"),
                 self.get("id")))
             urllib.request.urlretrieve(dlurl, local_file, self._progress_hook)
@@ -188,7 +188,7 @@ class strack:
 
         self.filepath = local_file + self.get_file_extension(local_file)
         os.rename(local_file, self.filepath)
-        print("Downloaded => %s\n" % self.filepath)
+        print("Downloaded => %s" % self.filepath)
 
         self.downloaded = True
         return True
@@ -200,7 +200,7 @@ class strack:
         if magic.from_file(self.filepath, mime=True) != b"audio/mpeg":
             return False
 
-        print("Processing tags for %s", self.filepath)
+        print("Processing tags for %s.." % self.filepath)
         if tag is None:
             tag = stag()
         tag.load_id3(self)
@@ -209,7 +209,7 @@ class strack:
     def convert(self):
         """Convert file in mp3 format."""
         if self.downloaded is False:
-            raise serror("Track not downloaded, can't process tags..")
+            raise serror("Track not downloaded, can't convert file..")
         if magic.from_file(self.filepath, mime=True) == b"audio/mpeg":
             return False
 
@@ -227,7 +227,7 @@ class strack:
         os.rename(self.filepath, backupfile)
         self.filepath = newfile
 
-        print("Converting %s => %s" % (backupfile, newfile))
+        print("Converting to %s.." % newfile)
         song = AudioSegment.from_file(backupfile)
         return song.export(newfile, format="mp3")
 

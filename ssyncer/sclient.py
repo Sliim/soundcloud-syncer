@@ -38,9 +38,9 @@ class sclient:
             self.port = kwargs.get("port")
 
         if not client_id:
-            print("INFO: Attempt to get client_id..")
+            print("Attempt to get client_id..")
             self.client_id = self.get_client_id()
-            print("INFO: OK, client_id = %s" % self.client_id)
+            print("OK, client_id = %s" % self.client_id)
         else:
             self.client_id = client_id
 

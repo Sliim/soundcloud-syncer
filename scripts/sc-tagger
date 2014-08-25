@@ -39,7 +39,7 @@ def process_tag(track_id, filepath):
         print(e)
         return False
 
-    print("INFO: Process tag for `%s` :id => %s" % (track.get("title"), track_id))
+    print("Process tag for `%s` :id => %s" % (track.get("title"), track_id))
     track.download_artwork(".")
     tag = stag()
     tag.load_id3(track)
