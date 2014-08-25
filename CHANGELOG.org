@@ -1,5 +1,8 @@
 * CHANGELOG for soundcloud-syncer
 
+** 0.3.0:
+- Added mp3 conversion support (--convert option)
+
 ** 0.2.3:
 - Use tox for souncloud-syncer testing
 - Fixed file extension
