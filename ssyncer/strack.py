@@ -20,6 +20,7 @@ import calendar
 import tempfile
 import glob
 import magic
+import re
 from dateutil.parser import parse
 
 from ssyncer.sclient import sclient
@@ -27,6 +28,8 @@ from ssyncer.serror import serror
 
 from stagger.id3 import *
 from stagger.tags import Tag24
+
+from pydub import AudioSegment
 
 
 class strack:
@@ -183,9 +186,9 @@ class strack:
             os.remove(local_file)
             raise
 
-        self.filename = local_file + self.get_file_extension(local_file)
-        os.rename(local_file, self.filename)
-        print("Downloaded => %s\n" % self.filename)
+        self.filepath = local_file + self.get_file_extension(local_file)
+        os.rename(local_file, self.filepath)
+        print("Downloaded => %s\n" % self.filepath)
 
         self.downloaded = True
         return True
@@ -194,25 +197,43 @@ class strack:
         """Process ID3 Tags for mp3 files."""
         if self.downloaded is False:
             raise serror("Track not downloaded, can't process tags..")
-        if magic.from_file(self.filename, mime=True) != b"audio/mpeg":
+        if magic.from_file(self.filepath, mime=True) != b"audio/mpeg":
             return False
 
-        print("Processing tags for %s", self.filename)
+        print("Processing tags for %s", self.filepath)
         if tag is None:
             tag = stag()
         tag.load_id3(self)
-        tag.write_id3(self.filename)
+        tag.write_id3(self.filepath)
 
     def convert(self):
         """Convert file in mp3 format."""
         if self.downloaded is False:
             raise serror("Track not downloaded, can't process tags..")
-        if magic.from_file(self.filename, mime=True) == b"audio/mpeg":
+        if magic.from_file(self.filepath, mime=True) == b"audio/mpeg":
             return False
 
-        print("Converting %s" % self.filename)
-        # TODO: Convert file
-        return True
+        rootpath = os.path.dirname(os.path.dirname(self.filepath))
+        backupdir = rootpath + "/backups/" + self.get("username")
+        if not os.path.exists(backupdir):
+            os.makedirs(backupdir)
+
+        backupfile = "%s/%s%s" % (
+            backupdir,
+            self.gen_filename(),
+            self.get_file_extension(self.filepath))
+        newfile = "%s.mp3" % self.filename_without_extension()
+
+        os.rename(self.filepath, backupfile)
+        self.filepath = newfile
+
+        print("Converting %s => %s" % (backupfile, newfile))
+        song = AudioSegment.from_file(backupfile)
+        return song.export(newfile, format="mp3")
+
+    def filename_without_extension(self):
+        """Return filename without extension"""
+        return re.sub("\.\w+$", "", self.filepath)
 
     def download_artwork(self, localdir):
         """

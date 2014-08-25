@@ -7,6 +7,9 @@ Soundcloud-syncer is a tool to synchronize soundcloud user's favorites and track
 - Python 3.x
 *** Packages dependencies
 - stagger (for id3 tag support)
+- pydub (for mp3 conversion)
+- python-dateutil
+- python-magic
 
 To run tests you need some packages:
 + tox
@@ -87,6 +90,16 @@ sc-tagger /path/to/directory/
 
 It may be useful to update tracks downloaded with soundcloud-syncer 0.1!
 
+** MP3 conversion
+You can convert non-mp3 files with `--convert` option.
+This feature requires [[https://pypi.python.org/pypi/pydub][pydub]] package that depends to `ffmpeg` or `avconv`. See pydub's readme for more informations.
+
+To convert non-mp3 files after each download:
+#+BEGIN_SRC shell
+sc-syncer -u USER_TO_SYNC -o OUTPUT_DIRECTORY --convert
+#+END_SRC
+
+This will create a backup directory at `OUTPUT_DIRECTORY/backups/` where will be placed original files before conversion, nothing is deleted.
 ** Features
 - Download user's favorites / likes tracks list.
 - Download user's tracks list.
@@ -95,5 +108,6 @@ It may be useful to update tracks downloaded with soundcloud-syncer 0.1!
 - Possibility to ignore some tracks to sync.
 - Recursive download.
 - ID3 Tag support.
+- MP3 conversion.
 ** License
    See COPYING file

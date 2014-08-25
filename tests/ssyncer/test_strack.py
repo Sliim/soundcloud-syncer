@@ -271,7 +271,7 @@ class TestStrack(unittest.TestCase):
         tag = Mock()
         object = strack(json_obj[0], client=client)
         object.downloaded = True
-        object.filename = "user1/1337-bar.mp3"
+        object.filepath = "user1/1337-bar.mp3"
 
         with patch("ssyncer.strack.magic.from_file",
                    return_value=b"audio/mpeg"):
@@ -288,7 +288,7 @@ class TestStrack(unittest.TestCase):
         client = Mock()
         object = strack(json_obj[2], client=client)
         object.downloaded = True
-        object.filename = "user3/1339-bar.wav"
+        object.filepath = "user3/1339-baz.wav"
 
         with patch("ssyncer.strack.magic.from_file",
                    return_value=b"audio/x-wav"):
@@ -308,11 +308,29 @@ class TestStrack(unittest.TestCase):
         client = Mock()
         object = strack(json_obj[2], client=client)
         object.downloaded = True
-        object.filename = "user3/1339-bar.wav"
+        object.filepath = self.tmpdir + "/user3/1339-baz.wav"
 
-        with patch("ssyncer.strack.magic.from_file",
-                   return_value=b"audio/x-wav"):
-            object.convert()
+        os.mkdir("%s/user3" % self.tmpdir)
+        f = open("%s/user3/1339-baz.wav" % self.tmpdir, "w+")
+        f.write("0" * 5)
+        f.close()
+
+        songmock = Mock()
+        with patch("ssyncer.strack.AudioSegment.from_file",
+                   return_value=songmock) as asegment:
+            with patch("ssyncer.strack.magic.from_file",
+                       return_value=b"audio/x-wav"):
+                object.convert()
+
+        self.assertTrue(os.path.exists(
+            "%s/backups/user3/1339-baz.wav" % self.tmpdir))
+        self.assertEquals(
+            "%s/user3/1339-baz.mp3" % self.tmpdir, object.filepath)
+        asegment.assert_called_once_with(
+            "%s/backups/user3/1339-baz.wav" % self.tmpdir)
+        songmock.export.assert_called_once_with(
+            "%s/user3/1339-baz.mp3" % self.tmpdir,
+            format="mp3")
 
     def test_convert_return_false_when_file_already_mpeg_format(self):
         """
@@ -322,7 +340,7 @@ class TestStrack(unittest.TestCase):
         client = Mock()
         object = strack(json_obj[0], client=client)
         object.downloaded = True
-        object.filename = "user1/1337-bar.mp3"
+        object.filepath = "user1/1337-bar.mp3"
         with patch("ssyncer.strack.magic.from_file",
                    return_value=b"audio/mpeg"):
             self.assertFalse(object.convert())
@@ -333,6 +351,24 @@ class TestStrack(unittest.TestCase):
         object = strack(json_obj[0], client=client)
         object.downloaded = False
         self.assertRaises(serror, object.convert)
+
+    def test_filename_without_extension(self):
+        """
+        Test filename_without_extension that Return filename without extension.
+        """
+        client = Mock()
+        object = strack(json_obj[2], client=client)
+        object.filepath = self.tmpdir + "/user3/1339-baz.wav"
+        self.assertEquals(self.tmpdir + "/user3/1339-baz",
+                          object.filename_without_extension())
+
+        object.filepath = self.tmpdir + "/user3/1339-baz.unknown"
+        self.assertEquals(self.tmpdir + "/user3/1339-baz",
+                          object.filename_without_extension())
+
+        object.filepath = self.tmpdir + "/user3/1339.baz.wav"
+        self.assertEquals(self.tmpdir + "/user3/1339.baz",
+                          object.filename_without_extension())
 
 
 class TestStag(unittest.TestCase):

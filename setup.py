@@ -13,6 +13,7 @@ setup(
     install_requires=[
         "stagger",
         "python-dateutil",
-        "python-magic"
+        "python-magic",
+        "pydub"
     ]
 )
