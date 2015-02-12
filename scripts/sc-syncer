@@ -22,7 +22,7 @@ from ssyncer.suser import suser
 from ssyncer.serror import serror
 
 
-def downloader(tgetter, output, process_tag, convert_file, *args):
+def downloader(tgetter, output, process_tag, convert_file, max_retry, *args):
     """ Download tracks. Return number of tracks downloaded. """
     try:
         tracks = tgetter(*args)
@@ -32,10 +32,10 @@ def downloader(tgetter, output, process_tag, convert_file, *args):
 
     for strack in tracks:
         try:
-            if strack.download(output) is False:
+            if strack.download(output, max_retry) is False:
                 continue
 
-            strack.download_artwork(output)
+            strack.download_artwork(output, max_retry)
             if convert_file:
                 strack.convert()
             if process_tag:
@@ -46,37 +46,47 @@ def downloader(tgetter, output, process_tag, convert_file, *args):
 
     return len(tracks)
 
+
 def main():
     parser = argparse.ArgumentParser(description="Soundcloud Syncer")
-    parser.add_argument("-u", "--user", help="Soundcloud user to sync", type=str, required=True)
-    parser.add_argument("-c", "--client-id", help="Your client id", type=str)
-    parser.add_argument("-o", "--output-dir", help="Output directory", type=str, required=True)
-    parser.add_argument("-O", "--offset", help="Tracks offset", type=int)
-    parser.add_argument("-L", "--limit", help="Tracks limit (max: 200)", type=int)
-    parser.add_argument("-r", "--recursive", help="Recursive download", action="store_true")
-    parser.add_argument("-t", "--tracks", help="Download user's tracks instead user's likes", action="store_true")
-    parser.add_argument("-w", "--without-tag", help="Download track without tags support", action="store_true")
-    parser.add_argument("-C", "--convert", help="Auto convert musics in mpeg format", action="store_true")
+    parser.add_argument("-u", "--user", help="Soundcloud user to sync",
+                        type=str, required=True)
+    parser.add_argument("-c", "--client-id", help="Your client id",
+                        type=str)
+    parser.add_argument("-o", "--output-dir", help="Output directory",
+                        type=str, required=True)
+    parser.add_argument("-O", "--offset", help="Tracks offset",
+                        type=int, default=0)
+    parser.add_argument("-L", "--limit",
+                        help="Tracks limit (default: 50, max: 200)",
+                        type=int, default=50)
+    parser.add_argument("-r", "--recursive",
+                        help="Recursive download",
+                        action="store_true")
+    parser.add_argument("-t", "--tracks",
+                        help="Download user's tracks instead user's likes",
+                        action="store_true")
+    parser.add_argument("-w", "--without-tag",
+                        help="Download track without tags support",
+                        action="store_true")
+    parser.add_argument("-C", "--convert",
+                        help="Auto convert musics in mpeg format",
+                        action="store_true")
+    parser.add_argument("-R", "--max-retry",
+                        help="Max retry for download failures (default: 3)",
+                        type=int, default=3)
 
     args = parser.parse_args()
+    process_tag = False if args.without_tag else True
 
     if not os.path.exists(args.output_dir):
         print(serror("Error: output directory `%s` doesn's exists." %
                      args.output_dir))
         exit(1)
 
-    process_tag = False if args.without_tag else True
-    convert_file = True if args.convert else False
-
-    offset = 0
-    limit = 50
-    if args.offset:
-        offset = args.offset
-    if args.limit:
-        if args.limit > 200:
-            print(serror("Error: tracks limit limited to 200 tracks.."))
-            exit(2)
-        limit = args.limit
+    if args.limit > 200:
+        print(serror("Error: tracks limit limited to 200 tracks.."))
+        exit(2)
 
     try:
         client = sclient(args.client_id)
@@ -90,26 +100,29 @@ def main():
         tracks_getter = user.get_tracks
 
     if args.recursive:
+        offset = args.offset
         while True:
             nb = downloader(
                 tracks_getter,
                 args.output_dir,
                 process_tag,
-                convert_file,
+                args.convert,
+                args.max_retry,
                 offset,
-                limit)
+                args.limit)
             if nb == 0:
                 break
 
-            offset = offset + limit
+            offset = offset + args.limit
     else:
         downloader(
             tracks_getter,
             args.output_dir,
             process_tag,
-            convert_file,
-            offset,
-            limit)
+            args.convert,
+            args.max_retry,
+            args.offset,
+            args.limit)
 
 if __name__ == '__main__':
     main()
