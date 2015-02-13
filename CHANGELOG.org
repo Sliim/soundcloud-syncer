@@ -1,9 +1,16 @@
 * CHANGELOG for soundcloud-syncer
+** 0.3.1
+
+- Fix `sc-syncer does not handle urllib.ContentTooShortError` - [[https://github.com/Sliim/soundcloud-syncer/issues/2][#2]]
+- Add retry option for failed downloads
+- Don't exit script on download failure, download next track
 
 ** 0.3.0:
+
 - Added mp3 conversion support (--convert option)
 
 ** 0.2.3:
+
 - Use tox for souncloud-syncer testing
 - Fixed file extension
 
