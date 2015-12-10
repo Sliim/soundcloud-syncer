@@ -41,6 +41,11 @@ sc-syncer -u USER_TO_SYNC -o OUTPUT_DIRECTORY
 sc-syncer -u USER_TO_SYNC -o OUTPUT_DIRECTORY -t
 #+END_SRC
 
+- Download user's playlists:
+#+BEGIN_SRC shell
+sc-syncer -u USER_TO_SYNC -o OUTPUT_DIRECTORY -p
+#+END_SRC
+
 - You can download tracks recursively:
 #+BEGIN_SRC shell
 sc-syncer -u USER_TO_SYNC -o OUTPUT_DIRECTORY -t -r
@@ -103,6 +108,7 @@ This will create a backup directory at `OUTPUT_DIRECTORY/backups/` where will be
 ** Features
 - Download user's favorites / likes tracks list.
 - Download user's tracks list.
+- Download user's playlists.
 - Possibility to set offset and limit for tracks list.
 - Auto find client_id when not passed to sync script.
 - Possibility to ignore some tracks to sync.
