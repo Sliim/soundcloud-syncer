@@ -1,4 +1,8 @@
 * CHANGELOG for soundcloud-syncer
+** 0.3.2
+
+- Add user's playlists download support
+
 ** 0.3.1
 
 - Fix `sc-syncer does not handle urllib.ContentTooShortError` - [[https://github.com/Sliim/soundcloud-syncer/issues/2][#2]]
