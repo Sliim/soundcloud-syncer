@@ -31,18 +31,24 @@ def downloader(tgetter, output, process_tag, convert_file, max_retry, *args):
         return False
 
     for strack in tracks:
-        try:
-            if strack.download(output, max_retry) is False:
-                continue
+        if strack.get("kind") != 'track':
+            splaylist = strack
+            print("Processing playlist {0}".format(splaylist.get("permalink")))
+            downloader(strack.get_tracks, output, process_tag, convert_file, max_retry, *args)
+            splaylist.write_playlist_file(output)
+        else:
+            try:
+                if strack.download(output, max_retry) is False:
+                    continue
 
-            strack.download_artwork(output, max_retry)
-            if convert_file:
-                strack.convert()
-            if process_tag:
-                strack.process_tags()
+                strack.download_artwork(output, max_retry)
+                if convert_file:
+                    strack.convert()
+                if process_tag:
+                    strack.process_tags()
 
-        except serror as e:
-            print(e)
+            except serror as e:
+                print(e)
 
     return len(tracks)
 
@@ -65,6 +71,9 @@ def main():
                         action="store_true")
     parser.add_argument("-t", "--tracks",
                         help="Download user's tracks instead user's likes",
+                        action="store_true")
+    parser.add_argument("-p", "--playlists",
+                        help="Download user's playlists instead user's likes",
                         action="store_true")
     parser.add_argument("-w", "--without-tag",
                         help="Download track without tags support",
@@ -98,6 +107,8 @@ def main():
     tracks_getter = user.get_likes
     if args.tracks:
         tracks_getter = user.get_tracks
+    elif args.playlists:
+        tracks_getter = user.get_playlists
 
     if args.recursive:
         offset = args.offset

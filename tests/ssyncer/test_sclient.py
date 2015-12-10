@@ -36,7 +36,7 @@ class TestSclient(unittest.TestCase):
         """
         sclient.get_client_id = Mock()
         sclient()
-        sclient.get_client_id.assert_called_once()
+        sclient.get_client_id.assert_called_once_with()
 
     def test_init_with_kwargs(self):
         """ Test object initialization with kwargs. """

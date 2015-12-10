@@ -28,6 +28,7 @@ class sclient:
     STREAM_URL = "/tracks/%d/stream?client_id="
     USER_LIKES = "/users/%s/favorites.json?offset=%d&limit=%d&client_id="
     USER_TRACKS = "/users/%s/tracks.json?offset=%d&limit=%d&client_id="
+    USER_PLAYLISTS = "/users/%s/playlists.json?offset=%d&limit=%d&client_id="
     TRACK_DATA = "/tracks/%s.json?client_id="
 
     def __init__(self, client_id=None, **kwargs):

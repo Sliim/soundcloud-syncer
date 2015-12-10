@@ -83,4 +83,26 @@ json_bytes = b'''[{
     "artwork_url":"https://foobar.dev/1339-large.jpg"
 }
 ]'''
+playlists_bytes = b'''[{
+    "duration":2524859,
+    "release_day":"Monday",
+    "permalink_url":"http://soundcloud.com/5liim/sets/dabass",
+    "reposts_count":0,
+    "genre":"dnb",
+    "permalink":"dabass",
+    "purchase_url":null,
+    "release_month":"February",
+    "description":"My awesome playlist",
+    "uri":"https://api.soundcloud.com/playlists/1337",
+    "label_name":"My Playlist",
+    "tag_list":"awesome",
+    "release_year":2020,
+    "track_count":42,
+    "user_id":1337,
+    "last_modified":"2015/04/22 08:13:52 +0000",
+    "license":"Beerware",
+    "tracks":[]}
+]'''
+
 json_obj = json.loads(json_bytes.decode("utf-8"))
+playlists_obj = json.loads(playlists_bytes.decode("utf-8"))

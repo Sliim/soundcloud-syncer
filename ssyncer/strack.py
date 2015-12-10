@@ -53,6 +53,7 @@ class strack:
 
         self.metadata = {
             "id": track_data["id"],
+            "kind": map("kind", track_data),
             "title": map("title", track_data),
             "permalink": map("permalink", track_data),
             "username": map("permalink", track_data["user"]),

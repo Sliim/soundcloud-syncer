@@ -15,6 +15,7 @@
 
 from ssyncer.sclient import sclient
 from ssyncer.strack import strack
+from ssyncer.splaylist import splaylist
 import json
 
 
@@ -38,20 +39,26 @@ class suser:
         """ Get user's likes. """
         response = self.client.get(
             self.client.USER_LIKES % (self.name, offset, limit))
-        return self._parse_tracks_response(response)
+        return self._parse_response(response, strack)
 
     def get_tracks(self, offset=0, limit=50):
         """ Get user's tracks. """
         response = self.client.get(
             self.client.USER_TRACKS % (self.name, offset, limit))
-        return self._parse_tracks_response(response)
+        return self._parse_response(response, strack)
 
-    def _parse_tracks_response(self, response):
-        """ Parse http response that contents tracks list. """
+    def get_playlists(self, offset=0, limit=50):
+        """ Get user's playlists. """
+        response = self.client.get(
+            self.client.USER_PLAYLISTS % (self.name, offset, limit))
+        return self._parse_response(response, splaylist)
+
+        return playlists
+
+    def _parse_response(self, response, target_object=strack):
+        """ Generic response parser method """
         objects = json.loads(response.read().decode("utf-8"))
-        tracks = []
-
-        for track in objects:
-            tracks.append(strack(track, client=self.client))
-
-        return tracks
+        list = []
+        for obj in objects:
+            list.append(target_object(obj, client=self.client))
+        return list

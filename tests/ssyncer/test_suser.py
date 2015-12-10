@@ -42,11 +42,11 @@ class TestSuser(unittest.TestCase):
         object = suser("Foo", client=client)
         self.assertEqual("Foo", object.name)
 
-    def test_parse_tracks_response(self):
+    def test_parse_response(self):
         """ Test parse tracks response on success. """
         client = MagicMock()
         object = suser("Foo", client=client)
-        tracks = object._parse_tracks_response(mock_tracks_response("bar"))
+        tracks = object._parse_response(mock_tracks_response("bar"), strack)
         self.assertEquals(3, len(tracks))
         for track in tracks:
             self.assertIsInstance(track, strack)
@@ -56,7 +56,7 @@ class TestSuser(unittest.TestCase):
         client = MagicMock()
         client.USER_LIKES = "/u/%s/f.json?o=%d&l=%d&c="
         object = suser("Foo", client=client)
-        object._parse_tracks_response = Mock()
+        object._parse_response = Mock()
         object.get_likes()
         client.get.assert_called_once_with(
             "/u/Foo/f.json?o=0&l=50&c=")
@@ -66,7 +66,7 @@ class TestSuser(unittest.TestCase):
         client = MagicMock()
         client.USER_LIKES = "/u/%s/f.json?o=%d&l=%d&c="
         object = suser("Foo", client=client)
-        object._parse_tracks_response = Mock()
+        object._parse_response = Mock()
         object.get_likes(10, 20)
         client.get.assert_called_once_with(
             "/u/Foo/f.json?o=10&l=20&c=")
@@ -76,7 +76,7 @@ class TestSuser(unittest.TestCase):
         client = MagicMock()
         client.USER_TRACKS = "/u/%s/t.json?o=%d&l=%d&c="
         object = suser("Foo", client=client)
-        object._parse_tracks_response = Mock()
+        object._parse_response = Mock()
         object.get_tracks()
         client.get.assert_called_once_with(
             "/u/Foo/t.json?o=0&l=50&c=")
@@ -86,7 +86,17 @@ class TestSuser(unittest.TestCase):
         client = MagicMock()
         client.USER_TRACKS = "/u/%s/t.json?o=%d&l=%d&c="
         object = suser("Foo", client=client)
-        object._parse_tracks_response = Mock()
+        object._parse_response = Mock()
         object.get_tracks(10, 20)
         client.get.assert_called_once_with(
             "/u/Foo/t.json?o=10&l=20&c=")
+
+    def test_get_playlists_with_custom_offset_and_limit(self):
+        """ Test get user's playlists with custom offset and limit. """
+        client = MagicMock()
+        client.USER_PLAYLISTS = "/u/%s/p.json?o=%d&l=%d&c="
+        object = suser("Foo", client=client)
+        object._parse_response = Mock()
+        object.get_playlists(10, 20)
+        client.get.assert_called_once_with(
+            "/u/Foo/p.json?o=10&l=20&c=")
