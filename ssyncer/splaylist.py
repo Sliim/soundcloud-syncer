@@ -21,7 +21,6 @@ from ssyncer.strack import strack
 class splaylist:
     client = None
     metadata = {}
-    tracks = []
 
     def __init__(self, playlist_data, **kwargs):
         """ Playlist object initialization, load playlist metadata. """
@@ -31,6 +30,10 @@ class splaylist:
             self.client = sclient(kwargs.get("client_id"))
         else:
             self.client = sclient()
+
+        tracks = []
+        for track in playlist_data["tracks"]:
+            tracks.append(strack(track, client=self.client))
 
         def map(key, data):
             return str(data[key]) if key in data else ""
@@ -52,10 +55,9 @@ class splaylist:
             "track-count": map("track_count", playlist_data),
             "user-id": map("user_id", playlist_data),
             "last-modified": map("last_modified", playlist_data),
-            "license": map("license", playlist_data)
+            "license": map("license", playlist_data),
+            "tracks": tracks
         }
-
-        self.get_tracks(playlist_data)
 
     def get(self, key):
         """ Get playlist metadata value from a given key. """
@@ -65,14 +67,7 @@ class splaylist:
 
     def get_tracks(self, playlist_data=None, *args):
         """ Get playlist's tracks. """
-        if self.tracks:
-            return self.tracks
-
-        if not playlist_data:
-            return False
-
-        for track in playlist_data["tracks"]:
-            self.tracks.append(strack(track, client=self.client))
+        return self.get("tracks")
 
     def gen_filename(self):
         """ Generate local filename for this playlist. """

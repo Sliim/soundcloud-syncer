@@ -34,7 +34,7 @@ def downloader(tgetter, output, process_tag, convert_file, max_retry, *args):
         if strack.get("kind") != 'track':
             splaylist = strack
             print("Processing playlist {0}".format(splaylist.get("permalink")))
-            downloader(strack.get_tracks, output, process_tag, convert_file, max_retry, *args)
+            downloader(splaylist.get_tracks, output, process_tag, convert_file, max_retry, *args)
             splaylist.write_playlist_file(output)
         else:
             try:

@@ -60,17 +60,11 @@ class TestSplaylist(unittest.TestCase):
         object = splaylist(playlists_obj[0], client=client)
         self.assertEquals(None, object.get("unknown"))
 
-    def test_get_tracks_returns_false_when_no_data(self):
-        """ Test get_tracks returns False when no data present. """
-        client = Mock()
-        object = splaylist(playlists_obj[0], client=client)
-        self.assertEquals(False, object.get_tracks())
-
     def test_get_tracks_returns_tracks_attribute(self):
-        """ Test get_tracks returns tracks from attribute. """
+        """ Test get_tracks returns tracks from metadata. """
         client = Mock()
         object = splaylist(playlists_obj[0], client=client)
-        object.tracks = "tracks_attribute"
+        object.metadata["tracks"] = "tracks_attribute"
         self.assertEquals("tracks_attribute", object.get_tracks())
 
     def test_gen_filename(self):
