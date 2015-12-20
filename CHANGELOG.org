@@ -1,4 +1,8 @@
 * CHANGELOG for soundcloud-syncer
+** 0.3.3
+
+- Improved playlist sync
+
 ** 0.3.2
 
 - Add user's playlists download support
