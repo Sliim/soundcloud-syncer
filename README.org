@@ -1,4 +1,4 @@
-* Soundcloud Syncer | [[http://travis-ci.org/Sliim/soundcloud-syncer][http://secure.travis-ci.org/Sliim/soundcloud-syncer.png?branch=master]]
+* Soundcloud Syncer | [[https://pypi.python.org/pypi/soundcloud-syncer][https://img.shields.io/pypi/v/soundcloud-syncer.svg]] [[http://travis-ci.org/Sliim/soundcloud-syncer][http://secure.travis-ci.org/Sliim/soundcloud-syncer.png?branch=master]]
 
 Soundcloud-syncer is a tool to synchronize soundcloud user's favorites and tracks locally.
 
