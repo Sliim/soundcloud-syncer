@@ -40,7 +40,7 @@ def process_tag(track_id, filepath):
         return False
 
     print("Process tag for `%s` :id => %s" % (track.get("title"), track_id))
-    track.download_artwork(".")
+    track.download_artwork(".", 3)
     tag = stag()
     tag.load_id3(track)
     tag.write_id3(filepath)
@@ -59,7 +59,9 @@ def retrieve_id_from(filename):
 
     return filename.split("-")[0]
 
+
 def main():
+    global client
     parser = argparse.ArgumentParser(description="Soundcloud Tagger")
     parser.add_argument("target",
                         type=str,
@@ -67,10 +69,17 @@ def main():
                         Filename format must be the same as generated from sc-syncer tool: {id}-{permalink}.mp3""")
     parser.add_argument("-i",
                         "--id",
-                        help="Specify track ID (only for a sinle file)",
+                        help="Specify track ID (only for a single file)",
                         type=int)
+    parser.add_argument("-c",
+                        "--client-id",
+                        help="Client ID to use for contacting soundcloud",
+                        type=str)
 
     args = parser.parse_args()
+
+    if args.client_id:
+        client = sclient(args.client_id)
 
     if os.path.isdir(args.target):
         if (args.id):
