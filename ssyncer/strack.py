@@ -110,9 +110,9 @@ class strack:
         If it can't, it use original-format metadata.
         """
         mtype = magic.from_file(filepath, mime=True)
-        if mtype == b"audio/mpeg":
+        if mtype == "audio/mpeg":
             ext = ".mp3"
-        elif mtype == b"audio/x-wav":
+        elif mtype == "audio/x-wav":
             ext = ".wav"
         else:
             ext = "." + self.get("original-format")
@@ -217,8 +217,9 @@ class strack:
         """Process ID3 Tags for mp3 files."""
         if self.downloaded is False:
             raise serror("Track not downloaded, can't process tags..")
-        if magic.from_file(self.filepath, mime=True) != b"audio/mpeg":
-            return False
+        filetype = magic.from_file(self.filepath, mime=True)
+        if filetype != "audio/mpeg":
+            raise serror("Cannot process tags for this file type: %s.." % filetype)
 
         print("Processing tags for %s.." % self.filepath)
         if tag is None:
@@ -230,8 +231,9 @@ class strack:
         """Convert file in mp3 format."""
         if self.downloaded is False:
             raise serror("Track not downloaded, can't convert file..")
-        if magic.from_file(self.filepath, mime=True) == b"audio/mpeg":
-            return False
+        filetype = magic.from_file(self.filepath, mime=True)
+        if filetype != "audio/mpeg":
+            raise serror("Cannot convert this file type: %s.." % filetype)
 
         rootpath = os.path.dirname(os.path.dirname(self.filepath))
         backupdir = rootpath + "/backups/" + self.get("username")
