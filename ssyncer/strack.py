@@ -110,6 +110,9 @@ class strack:
         If it can't, it use original-format metadata.
         """
         mtype = magic.from_file(filepath, mime=True)
+        if type(mtype) == bytes:
+            mtype = mtype.decode("utf-8")
+
         if mtype == "audio/mpeg":
             ext = ".mp3"
         elif mtype == "audio/x-wav":

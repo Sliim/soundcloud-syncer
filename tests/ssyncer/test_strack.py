@@ -230,10 +230,7 @@ class TestStrack(unittest.TestCase):
         self.assertEquals(0, len(ignored))
 
     def test_get_file_extension_from_mimetype_mp3(self):
-        """
-        Test get_file_extension method that return
-        extension depending of mimetype.
-        """
+        """Test get_file_extension return extension depending of mimetype."""
         client = Mock()
         object = strack(json_obj[2], client=client)
         with patch("ssyncer.strack.magic.from_file",
@@ -242,11 +239,18 @@ class TestStrack(unittest.TestCase):
                               object.get_file_extension(
                                   "user3/1339-baz"))
 
+    def test_get_file_extension_with_bytes_mimetype(self):
+        """Test get_file_extension return extension when mtype is bytes."""
+        client = Mock()
+        object = strack(json_obj[2], client=client)
+        with patch("ssyncer.strack.magic.from_file",
+                   return_value=b"audio/mpeg"):
+            self.assertEquals(".mp3",
+                              object.get_file_extension(
+                                  "user3/1339-baz"))
+
     def test_get_file_extension_from_mimetype_wave(self):
-        """
-        Test get_file_extension method that return
-        extension depending of mimetype.
-        """
+        """Test get_file_extension return extension depending of mimetype."""
         client = Mock()
         object = strack(json_obj[2], client=client)
         with patch("ssyncer.strack.magic.from_file",
@@ -256,10 +260,7 @@ class TestStrack(unittest.TestCase):
                                   "user3/1339-baz"))
 
     def test_get_file_extension_from_metadata(self):
-        """
-        Test get_file_extension method that return
-        extension depending of metadata.
-        """
+        """Test get_file_extension return extension depending of metadata."""
         client = Mock()
         object = strack(json_obj[2], client=client)
         with patch("ssyncer.strack.magic.from_file",
