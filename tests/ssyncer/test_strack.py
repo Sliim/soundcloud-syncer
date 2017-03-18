@@ -237,7 +237,7 @@ class TestStrack(unittest.TestCase):
         client = Mock()
         object = strack(json_obj[2], client=client)
         with patch("ssyncer.strack.magic.from_file",
-                   return_value=b"audio/mpeg"):
+                   return_value="audio/mpeg"):
             self.assertEquals(".mp3",
                               object.get_file_extension(
                                   "user3/1339-baz"))
@@ -250,7 +250,7 @@ class TestStrack(unittest.TestCase):
         client = Mock()
         object = strack(json_obj[2], client=client)
         with patch("ssyncer.strack.magic.from_file",
-                   return_value=b"audio/x-wav"):
+                   return_value="audio/x-wav"):
             self.assertEquals(".wav",
                               object.get_file_extension(
                                   "user3/1339-baz"))
@@ -263,7 +263,7 @@ class TestStrack(unittest.TestCase):
         client = Mock()
         object = strack(json_obj[2], client=client)
         with patch("ssyncer.strack.magic.from_file",
-                   return_value=b"audio/unknown"):
+                   return_value="audio/unknown"):
             self.assertEquals(".wav",
                               object.get_file_extension(
                                   "user3/1339-baz"))
@@ -277,25 +277,22 @@ class TestStrack(unittest.TestCase):
         object.filepath = "user1/1337-bar.mp3"
 
         with patch("ssyncer.strack.magic.from_file",
-                   return_value=b"audio/mpeg"):
+                   return_value="audio/mpeg"):
             object.process_tags(tag=tag)
 
         tag.load_id3.assert_called_once_with(object)
         tag.write_id3.assert_called_once_with("user1/1337-bar.mp3")
 
-    def test_process_tags_return_false_if_not_mpeg(self):
-        """
-        Test that process_tags() method return False if
-        file is not in mpeg format.
-        """
+    def test_process_tags_raises_error_if_not_mpeg(self):
+        """Test process_tags() raises error if file is not in mpeg format."""
         client = Mock()
         object = strack(json_obj[2], client=client)
         object.downloaded = True
         object.filepath = "user3/1339-baz.wav"
 
         with patch("ssyncer.strack.magic.from_file",
-                   return_value=b"audio/x-wav"):
-            self.assertFalse(object.process_tags())
+                   return_value="audio/x-wav"):
+            self.assertRaises(serror, object.process_tags)
 
     def test_process_tags_raises_error_when_track_not_downloaded(self):
         """
@@ -322,7 +319,7 @@ class TestStrack(unittest.TestCase):
         with patch("ssyncer.strack.AudioSegment.from_file",
                    return_value=songmock) as asegment:
             with patch("ssyncer.strack.magic.from_file",
-                       return_value=b"audio/x-wav"):
+                       return_value="audio/x-wav"):
                 object.convert()
 
         self.assertTrue(os.path.exists(
@@ -335,18 +332,15 @@ class TestStrack(unittest.TestCase):
             "%s/user3/1339-baz.mp3" % self.tmpdir,
             format="mp3")
 
-    def test_convert_return_false_when_file_already_mpeg_format(self):
-        """
-        Test convert method return False if file is
-        already in mpeg format.
-        """
+    def test_convert_raises_error_when_file_already_mpeg_format(self):
+        """Test convert raises error if file is already in mpeg format."""
         client = Mock()
         object = strack(json_obj[0], client=client)
         object.downloaded = True
         object.filepath = "user1/1337-bar.mp3"
         with patch("ssyncer.strack.magic.from_file",
-                   return_value=b"audio/mpeg"):
-            self.assertFalse(object.convert())
+                   return_value="audio/mpeg"):
+            self.assertRaises(serror, object.convert)
 
     def test_convert_raises_error_when_track_not_downloaded(self):
         """Test convert method raises error when track is not downloaded."""

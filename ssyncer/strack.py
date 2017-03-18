@@ -219,7 +219,7 @@ class strack:
             raise serror("Track not downloaded, can't process tags..")
         filetype = magic.from_file(self.filepath, mime=True)
         if filetype != "audio/mpeg":
-            raise serror("Cannot process tags for this file type: %s.." % filetype)
+            raise serror("Cannot process tags for file type %s." % filetype)
 
         print("Processing tags for %s.." % self.filepath)
         if tag is None:
@@ -232,7 +232,7 @@ class strack:
         if self.downloaded is False:
             raise serror("Track not downloaded, can't convert file..")
         filetype = magic.from_file(self.filepath, mime=True)
-        if filetype != "audio/mpeg":
+        if filetype == "audio/mpeg":
             raise serror("Cannot convert this file type: %s.." % filetype)
 
         rootpath = os.path.dirname(os.path.dirname(self.filepath))
