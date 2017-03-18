@@ -333,7 +333,7 @@ class TestStrack(unittest.TestCase):
             "%s/user3/1339-baz.mp3" % self.tmpdir,
             format="mp3")
 
-    def test_convert_raises_error_when_file_already_mpeg_format(self):
+    def test_convert_return_false_when_file_already_mpeg_format(self):
         """Test convert raises error if file is already in mpeg format."""
         client = Mock()
         object = strack(json_obj[0], client=client)
@@ -341,7 +341,7 @@ class TestStrack(unittest.TestCase):
         object.filepath = "user1/1337-bar.mp3"
         with patch("ssyncer.strack.magic.from_file",
                    return_value="audio/mpeg"):
-            self.assertRaises(serror, object.convert)
+            self.assertFalse(object.convert())
 
     def test_convert_raises_error_when_track_not_downloaded(self):
         """Test convert method raises error when track is not downloaded."""

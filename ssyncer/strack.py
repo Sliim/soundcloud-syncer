@@ -236,7 +236,8 @@ class strack:
             raise serror("Track not downloaded, can't convert file..")
         filetype = magic.from_file(self.filepath, mime=True)
         if filetype == "audio/mpeg":
-            raise serror("Cannot convert this file type: %s.." % filetype)
+            print("File is already in mp3 format. Skipping convert.")
+            return False
 
         rootpath = os.path.dirname(os.path.dirname(self.filepath))
         backupdir = rootpath + "/backups/" + self.get("username")
